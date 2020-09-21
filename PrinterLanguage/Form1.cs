@@ -95,8 +95,40 @@ namespace PrinterLanguage
 
                             if (token == "IDE")
                             {
-                                //
-                                token = agregarDatosEnTablas("Identificador", token, subcadena, subcadena, subcadena);
+                                //AQUI OCURRE EL DUPLICADO EN EL DATA GRIDVIEW------------------------------------------------------------
+                                //MessageBox.Show(cadena[y+2].ToString());
+                                //------------------------------------------------------------------------------------------------------
+
+                                
+                                //CICLO PARA OBTENER EL CONTENIDO DEL IDENTIFICADOR-----------------------------------------------------
+                                bool contenidoEncontrado = false;
+                                string contenido = "";
+                                int contadorY = 3;
+
+                                do
+                                {
+                                    MessageBox.Show(cadena[y+contadorY].ToString());
+                                    contenido = contenido + cadena[y + contadorY].ToString();
+             
+                                    if (cadena[contadorY].ToString() == " ") 
+                                    {
+                                        contenidoEncontrado = true;
+                                        contenido = contenido + cadena[y + contadorY].ToString();
+
+
+                                    }
+                                    else
+                                    {
+                                        contenidoEncontrado = false;
+                                        //contenido = contenido + cadena[y+contadorY].ToString();
+                                        contadorY = contadorY + 1;
+                                        //MessageBox.Show(contenido);
+                                    }
+
+                                } while (contenidoEncontrado == false);
+
+                                //-----------------------------------------------------------//
+                                token = agregarDatosEnTablas("Identificador", token, subcadena, "entero", contenido);
                                 mostrarDatosEnTablas();
                                 aux1 = "IDEN";
                                 bandera = true;
@@ -121,9 +153,9 @@ namespace PrinterLanguage
 
                             txtCadenaDeTokens.Text = txtCadenaDeTokens.Text + token + " ";
                             //--------------------------CODIGO NUEVO/SEMANTICA-------------------------//
-                            PrimeraPasada primeraPasada = new PrimeraPasada();
+                            /*PrimeraPasada primeraPasada = new PrimeraPasada();
                             primeraPasada.TipoDato(txtCadenaDeTokens.Text);
-                            MessageBox.Show(txtCadenaDeTokens.Text);
+                            MessageBox.Show(txtCadenaDeTokens.Text);*/
                             //------------------------------------------------------------------------//
 
                             apuntador = "0";
