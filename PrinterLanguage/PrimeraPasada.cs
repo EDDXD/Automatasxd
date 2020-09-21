@@ -14,7 +14,7 @@ namespace PrinterLanguage
 
         public void TipoDato()
         {
-
+            //ESTO ES UNA PRUEBA
         }
     }
 }
