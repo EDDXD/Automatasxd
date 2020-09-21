@@ -96,15 +96,14 @@ namespace PrinterLanguage
                             if (token == "IDE")
                             {
                                 //
-                                token = agregarDatosEnTablas("Identificador", token, subcadena);
+                                token = agregarDatosEnTablas("Identificador", token, subcadena, subcadena, subcadena);
                                 mostrarDatosEnTablas();
                                 aux1 = "IDEN";
                                 bandera = true;
                             }
                             else if (token == "CNU")
                             {
-                                token = agregarDatosEnTablas("ConstanteNumerica", token, subcadena);
-                                token = agregarDatosEnTablas("Identificador", token, subcadena);
+                                token = agregarDatosEnTablas("ConstanteNumerica", token, subcadena, subcadena, subcadena);
                                 mostrarDatosEnTablas();
                                 aux1 = "CNUE";
                                 bandera = true;
@@ -181,7 +180,7 @@ namespace PrinterLanguage
             return a;
         }
 
-        public string agregarDatosEnTablas(string tabla, string token, string contenido)
+        public string agregarDatosEnTablas(string tabla, string token, string nombre, string tipo, string contenido)
         {
             MySqlConnection mySQLCon = new MySqlConnection(cadenaConexion);
 
@@ -198,8 +197,17 @@ namespace PrinterLanguage
 
             if (filas == 0)
             {
+                MySqlCommand myQuery2;
+                if (tabla.Equals("Identificador"))
+                {
+                    myQuery2 = new MySqlCommand("INSERT INTO " + tabla + " (TOKEN, NOMBRE, TIPO, CONTENIDO) VALUES ( '" + token + "1', '" + nombre + "', '" + tipo + "', '" + contenido + "')", mySQLCon);
+                }
+                else
+                {
+                    myQuery2 = new MySqlCommand("INSERT INTO " + tabla + " (TOKEN, CONTENIDO) VALUES ( '" + token + "1', '" + contenido + "')", mySQLCon);
+                }
+
                 mySQLCon.Open();
-                MySqlCommand myQuery2 = new MySqlCommand("INSERT INTO " + tabla + " (TOKEN, CONTENIDO) VALUES ( '" + token + "1', '" + contenido + "')", mySQLCon);
                 myQuery2.ExecuteNonQuery();
                 mySQLCon.Close();
                 return token + 1;

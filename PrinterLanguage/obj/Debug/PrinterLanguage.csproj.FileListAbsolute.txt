@@ -80,3 +80,16 @@ C:\Users\ajedr\OneDrive\Documentos\GitHub\Automatasxd\PrinterLanguage\obj\Debug\
 C:\Users\ajedr\OneDrive\Documentos\GitHub\Automatasxd\PrinterLanguage\obj\Debug\PrinterLanguage.csproj.CopyComplete
 C:\Users\ajedr\OneDrive\Documentos\GitHub\Automatasxd\PrinterLanguage\obj\Debug\PrinterLanguage.exe
 C:\Users\ajedr\OneDrive\Documentos\GitHub\Automatasxd\PrinterLanguage\obj\Debug\PrinterLanguage.pdb
+C:\Users\maroh\OneDrive\Documents\7 A 2020\Lenguajes y Autómatas 2\P1\PrinterLanguage\Automatasxd\PrinterLanguage\bin\Debug\PrinterLanguage.exe.config
+C:\Users\maroh\OneDrive\Documents\7 A 2020\Lenguajes y Autómatas 2\P1\PrinterLanguage\Automatasxd\PrinterLanguage\bin\Debug\PrinterLanguage.exe
+C:\Users\maroh\OneDrive\Documents\7 A 2020\Lenguajes y Autómatas 2\P1\PrinterLanguage\Automatasxd\PrinterLanguage\bin\Debug\PrinterLanguage.pdb
+C:\Users\maroh\OneDrive\Documents\7 A 2020\Lenguajes y Autómatas 2\P1\PrinterLanguage\Automatasxd\PrinterLanguage\bin\Debug\Google.Protobuf.dll
+C:\Users\maroh\OneDrive\Documents\7 A 2020\Lenguajes y Autómatas 2\P1\PrinterLanguage\Automatasxd\PrinterLanguage\bin\Debug\BouncyCastle.Crypto.dll
+C:\Users\maroh\OneDrive\Documents\7 A 2020\Lenguajes y Autómatas 2\P1\PrinterLanguage\Automatasxd\PrinterLanguage\bin\Debug\MySql.Data.xml
+C:\Users\maroh\OneDrive\Documents\7 A 2020\Lenguajes y Autómatas 2\P1\PrinterLanguage\Automatasxd\PrinterLanguage\obj\Debug\PrinterLanguage.csprojAssemblyReference.cache
+C:\Users\maroh\OneDrive\Documents\7 A 2020\Lenguajes y Autómatas 2\P1\PrinterLanguage\Automatasxd\PrinterLanguage\obj\Debug\PrinterLanguage.Form1.resources
+C:\Users\maroh\OneDrive\Documents\7 A 2020\Lenguajes y Autómatas 2\P1\PrinterLanguage\Automatasxd\PrinterLanguage\obj\Debug\PrinterLanguage.Properties.Resources.resources
+C:\Users\maroh\OneDrive\Documents\7 A 2020\Lenguajes y Autómatas 2\P1\PrinterLanguage\Automatasxd\PrinterLanguage\obj\Debug\PrinterLanguage.csproj.GenerateResource.cache
+C:\Users\maroh\OneDrive\Documents\7 A 2020\Lenguajes y Autómatas 2\P1\PrinterLanguage\Automatasxd\PrinterLanguage\obj\Debug\PrinterLanguage.csproj.CopyComplete
+C:\Users\maroh\OneDrive\Documents\7 A 2020\Lenguajes y Autómatas 2\P1\PrinterLanguage\Automatasxd\PrinterLanguage\obj\Debug\PrinterLanguage.exe
+C:\Users\maroh\OneDrive\Documents\7 A 2020\Lenguajes y Autómatas 2\P1\PrinterLanguage\Automatasxd\PrinterLanguage\obj\Debug\PrinterLanguage.pdb

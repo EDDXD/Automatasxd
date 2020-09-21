@@ -56,23 +56,26 @@
             // 
             // rtxtCodigo
             // 
-            this.rtxtCodigo.BackColor = System.Drawing.Color.LightGray;
-            this.rtxtCodigo.Font = new System.Drawing.Font("Comic Sans MS", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.rtxtCodigo.ForeColor = System.Drawing.Color.Crimson;
-            this.rtxtCodigo.Location = new System.Drawing.Point(12, 12);
+            this.rtxtCodigo.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(36)))), ((int)(((byte)(36)))), ((int)(((byte)(36)))));
+            this.rtxtCodigo.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.rtxtCodigo.Font = new System.Drawing.Font("Consolas", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.rtxtCodigo.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(192)))), ((int)(((byte)(192)))));
+            this.rtxtCodigo.Location = new System.Drawing.Point(11, 11);
+            this.rtxtCodigo.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.rtxtCodigo.Name = "rtxtCodigo";
-            this.rtxtCodigo.Size = new System.Drawing.Size(400, 150);
+            this.rtxtCodigo.Size = new System.Drawing.Size(490, 206);
             this.rtxtCodigo.TabIndex = 0;
             this.rtxtCodigo.Text = "";
             // 
             // btnEjecutar
             // 
-            this.btnEjecutar.BackColor = System.Drawing.Color.Silver;
+            this.btnEjecutar.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(255)))), ((int)(((byte)(192)))));
             this.btnEjecutar.Cursor = System.Windows.Forms.Cursors.Default;
             this.btnEjecutar.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnEjecutar.Location = new System.Drawing.Point(445, 132);
+            this.btnEjecutar.Location = new System.Drawing.Point(165, 226);
+            this.btnEjecutar.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.btnEjecutar.Name = "btnEjecutar";
-            this.btnEjecutar.Size = new System.Drawing.Size(95, 30);
+            this.btnEjecutar.Size = new System.Drawing.Size(102, 33);
             this.btnEjecutar.TabIndex = 0;
             this.btnEjecutar.Text = "Ejecutar";
             this.btnEjecutar.UseVisualStyleBackColor = false;
@@ -81,85 +84,95 @@
             // lblNumRenglon
             // 
             this.lblNumRenglon.AutoSize = true;
-            this.lblNumRenglon.Location = new System.Drawing.Point(441, 59);
+            this.lblNumRenglon.Location = new System.Drawing.Point(342, 233);
+            this.lblNumRenglon.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblNumRenglon.Name = "lblNumRenglon";
-            this.lblNumRenglon.Size = new System.Drawing.Size(168, 28);
+            this.lblNumRenglon.Size = new System.Drawing.Size(117, 20);
             this.lblNumRenglon.TabIndex = 0;
             this.lblNumRenglon.Text = "# de renglón";
             // 
             // txtNumRenglon
             // 
             this.txtNumRenglon.Enabled = false;
-            this.txtNumRenglon.Location = new System.Drawing.Point(469, 86);
+            this.txtNumRenglon.Location = new System.Drawing.Point(463, 232);
+            this.txtNumRenglon.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.txtNumRenglon.Name = "txtNumRenglon";
-            this.txtNumRenglon.Size = new System.Drawing.Size(50, 37);
+            this.txtNumRenglon.Size = new System.Drawing.Size(38, 27);
             this.txtNumRenglon.TabIndex = 0;
             this.txtNumRenglon.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
             // btnCargarArchivo
             // 
-            this.btnCargarArchivo.BackColor = System.Drawing.Color.Silver;
+            this.btnCargarArchivo.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
             this.btnCargarArchivo.Cursor = System.Windows.Forms.Cursors.Default;
             this.btnCargarArchivo.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnCargarArchivo.Location = new System.Drawing.Point(422, 12);
+            this.btnCargarArchivo.Location = new System.Drawing.Point(11, 226);
+            this.btnCargarArchivo.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.btnCargarArchivo.Name = "btnCargarArchivo";
-            this.btnCargarArchivo.Size = new System.Drawing.Size(150, 30);
+            this.btnCargarArchivo.Size = new System.Drawing.Size(145, 33);
             this.btnCargarArchivo.TabIndex = 0;
-            this.btnCargarArchivo.Text = "Cargar Archivo";
+            this.btnCargarArchivo.Text = "Cargar archivo";
             this.btnCargarArchivo.UseVisualStyleBackColor = false;
             this.btnCargarArchivo.Click += new System.EventHandler(this.btnCargarArchivo_Click);
             // 
             // lblSubCadenaAEvaluar
             // 
             this.lblSubCadenaAEvaluar.AutoSize = true;
-            this.lblSubCadenaAEvaluar.Location = new System.Drawing.Point(12, 175);
+            this.lblSubCadenaAEvaluar.Location = new System.Drawing.Point(11, 269);
+            this.lblSubCadenaAEvaluar.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblSubCadenaAEvaluar.Name = "lblSubCadenaAEvaluar";
-            this.lblSubCadenaAEvaluar.Size = new System.Drawing.Size(278, 28);
+            this.lblSubCadenaAEvaluar.Size = new System.Drawing.Size(180, 20);
             this.lblSubCadenaAEvaluar.TabIndex = 0;
-            this.lblSubCadenaAEvaluar.Text = "Sub-cadena a evaluar";
+            this.lblSubCadenaAEvaluar.Text = "Subcadena a evaluar";
             // 
             // lblCadenaDeTokens
             // 
             this.lblCadenaDeTokens.AutoSize = true;
-            this.lblCadenaDeTokens.Location = new System.Drawing.Point(12, 237);
+            this.lblCadenaDeTokens.Location = new System.Drawing.Point(11, 323);
+            this.lblCadenaDeTokens.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblCadenaDeTokens.Name = "lblCadenaDeTokens";
-            this.lblCadenaDeTokens.Size = new System.Drawing.Size(236, 28);
+            this.lblCadenaDeTokens.Size = new System.Drawing.Size(153, 20);
             this.lblCadenaDeTokens.TabIndex = 0;
             this.lblCadenaDeTokens.Text = "Cadena de tokens";
             // 
             // txtSubCadenaAEvaluar
             // 
-            this.txtSubCadenaAEvaluar.Location = new System.Drawing.Point(12, 197);
+            this.txtSubCadenaAEvaluar.Location = new System.Drawing.Point(11, 288);
+            this.txtSubCadenaAEvaluar.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.txtSubCadenaAEvaluar.Name = "txtSubCadenaAEvaluar";
-            this.txtSubCadenaAEvaluar.Size = new System.Drawing.Size(400, 37);
+            this.txtSubCadenaAEvaluar.Size = new System.Drawing.Size(490, 27);
             this.txtSubCadenaAEvaluar.TabIndex = 0;
             // 
             // txtCadenaDeTokens
             // 
-            this.txtCadenaDeTokens.Location = new System.Drawing.Point(12, 259);
+            this.txtCadenaDeTokens.Location = new System.Drawing.Point(11, 342);
+            this.txtCadenaDeTokens.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.txtCadenaDeTokens.Name = "txtCadenaDeTokens";
-            this.txtCadenaDeTokens.Size = new System.Drawing.Size(400, 37);
+            this.txtCadenaDeTokens.Size = new System.Drawing.Size(490, 27);
             this.txtCadenaDeTokens.TabIndex = 0;
             // 
             // rtxtCodigoIntermedio
             // 
-            this.rtxtCodigoIntermedio.BackColor = System.Drawing.Color.Black;
-            this.rtxtCodigoIntermedio.Font = new System.Drawing.Font("Consolas", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.rtxtCodigoIntermedio.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(71)))), ((int)(((byte)(71)))), ((int)(((byte)(71)))));
+            this.rtxtCodigoIntermedio.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.rtxtCodigoIntermedio.Font = new System.Drawing.Font("Consolas", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.rtxtCodigoIntermedio.ForeColor = System.Drawing.Color.White;
-            this.rtxtCodigoIntermedio.Location = new System.Drawing.Point(12, 321);
+            this.rtxtCodigoIntermedio.Location = new System.Drawing.Point(9, 399);
+            this.rtxtCodigoIntermedio.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.rtxtCodigoIntermedio.Name = "rtxtCodigoIntermedio";
-            this.rtxtCodigoIntermedio.Size = new System.Drawing.Size(400, 150);
+            this.rtxtCodigoIntermedio.Size = new System.Drawing.Size(492, 131);
             this.rtxtCodigoIntermedio.TabIndex = 0;
             this.rtxtCodigoIntermedio.Text = "";
             // 
             // lblCodigoIntermedio
             // 
             this.lblCodigoIntermedio.AutoSize = true;
-            this.lblCodigoIntermedio.Location = new System.Drawing.Point(12, 299);
+            this.lblCodigoIntermedio.Location = new System.Drawing.Point(9, 378);
+            this.lblCodigoIntermedio.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblCodigoIntermedio.Name = "lblCodigoIntermedio";
-            this.lblCodigoIntermedio.Size = new System.Drawing.Size(241, 28);
+            this.lblCodigoIntermedio.Size = new System.Drawing.Size(162, 20);
             this.lblCodigoIntermedio.TabIndex = 0;
-            this.lblCodigoIntermedio.Text = "Código Intermedio";
+            this.lblCodigoIntermedio.Text = "Código intermedio";
             // 
             // dgvIdentificadores
             // 
@@ -168,7 +181,7 @@
             this.dgvIdentificadores.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
             dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle1.Font = new System.Drawing.Font("Century Gothic", 12F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle1.Font = new System.Drawing.Font("Consolas", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.WindowText;
             dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
             dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
@@ -177,16 +190,18 @@
             this.dgvIdentificadores.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
             dataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle2.Font = new System.Drawing.Font("Century Gothic", 12F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle2.Font = new System.Drawing.Font("Consolas", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             dataGridViewCellStyle2.ForeColor = System.Drawing.SystemColors.ControlText;
             dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Highlight;
             dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
             dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
             this.dgvIdentificadores.DefaultCellStyle = dataGridViewCellStyle2;
-            this.dgvIdentificadores.Location = new System.Drawing.Point(12, 500);
+            this.dgvIdentificadores.Location = new System.Drawing.Point(9, 559);
+            this.dgvIdentificadores.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.dgvIdentificadores.Name = "dgvIdentificadores";
+            this.dgvIdentificadores.RowHeadersVisible = false;
             this.dgvIdentificadores.RowHeadersWidth = 62;
-            this.dgvIdentificadores.Size = new System.Drawing.Size(275, 150);
+            this.dgvIdentificadores.Size = new System.Drawing.Size(301, 130);
             this.dgvIdentificadores.TabIndex = 0;
             // 
             // dgvConstantesNumericas
@@ -196,7 +211,7 @@
             this.dgvConstantesNumericas.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
             dataGridViewCellStyle3.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle3.Font = new System.Drawing.Font("Century Gothic", 12F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle3.Font = new System.Drawing.Font("Consolas", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             dataGridViewCellStyle3.ForeColor = System.Drawing.SystemColors.WindowText;
             dataGridViewCellStyle3.SelectionBackColor = System.Drawing.SystemColors.Highlight;
             dataGridViewCellStyle3.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
@@ -205,78 +220,86 @@
             this.dgvConstantesNumericas.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
             dataGridViewCellStyle4.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle4.Font = new System.Drawing.Font("Century Gothic", 12F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle4.Font = new System.Drawing.Font("Consolas", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             dataGridViewCellStyle4.ForeColor = System.Drawing.SystemColors.ControlText;
             dataGridViewCellStyle4.SelectionBackColor = System.Drawing.SystemColors.Highlight;
             dataGridViewCellStyle4.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
             dataGridViewCellStyle4.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
             this.dgvConstantesNumericas.DefaultCellStyle = dataGridViewCellStyle4;
-            this.dgvConstantesNumericas.Location = new System.Drawing.Point(297, 500);
+            this.dgvConstantesNumericas.Location = new System.Drawing.Point(316, 559);
+            this.dgvConstantesNumericas.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.dgvConstantesNumericas.Name = "dgvConstantesNumericas";
+            this.dgvConstantesNumericas.RowHeadersVisible = false;
             this.dgvConstantesNumericas.RowHeadersWidth = 62;
-            this.dgvConstantesNumericas.Size = new System.Drawing.Size(275, 150);
+            this.dgvConstantesNumericas.Size = new System.Drawing.Size(185, 130);
             this.dgvConstantesNumericas.TabIndex = 0;
             // 
             // lblIdentificadores
             // 
             this.lblIdentificadores.AutoSize = true;
-            this.lblIdentificadores.Location = new System.Drawing.Point(87, 478);
+            this.lblIdentificadores.Location = new System.Drawing.Point(11, 536);
+            this.lblIdentificadores.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblIdentificadores.Name = "lblIdentificadores";
-            this.lblIdentificadores.Size = new System.Drawing.Size(191, 28);
+            this.lblIdentificadores.Size = new System.Drawing.Size(144, 20);
             this.lblIdentificadores.TabIndex = 0;
             this.lblIdentificadores.Text = "Identificadores";
             // 
             // lblConstantesNumericas
             // 
             this.lblConstantesNumericas.AutoSize = true;
-            this.lblConstantesNumericas.Location = new System.Drawing.Point(341, 478);
+            this.lblConstantesNumericas.Location = new System.Drawing.Point(312, 536);
+            this.lblConstantesNumericas.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblConstantesNumericas.Name = "lblConstantesNumericas";
-            this.lblConstantesNumericas.Size = new System.Drawing.Size(282, 28);
+            this.lblConstantesNumericas.Size = new System.Drawing.Size(189, 20);
             this.lblConstantesNumericas.TabIndex = 0;
-            this.lblConstantesNumericas.Text = "Constantes Numéricas";
+            this.lblConstantesNumericas.Text = "Constantes numéricas";
             // 
             // btnGramatica
             // 
-            this.btnGramatica.Location = new System.Drawing.Point(923, 596);
-            this.btnGramatica.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.btnGramatica.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(192)))), ((int)(((byte)(255)))));
+            this.btnGramatica.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnGramatica.Location = new System.Drawing.Point(880, 654);
+            this.btnGramatica.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.btnGramatica.Name = "btnGramatica";
-            this.btnGramatica.Size = new System.Drawing.Size(174, 40);
+            this.btnGramatica.Size = new System.Drawing.Size(130, 35);
             this.btnGramatica.TabIndex = 3;
-            this.btnGramatica.Text = "Gramatica";
-            this.btnGramatica.UseVisualStyleBackColor = true;
+            this.btnGramatica.Text = "Gramática";
+            this.btnGramatica.UseVisualStyleBackColor = false;
             this.btnGramatica.Click += new System.EventHandler(this.btnGramatica_Click);
             // 
             // rtxtGramatica
             // 
-            this.rtxtGramatica.BackColor = System.Drawing.Color.Black;
-            this.rtxtGramatica.ForeColor = System.Drawing.Color.LimeGreen;
-            this.rtxtGramatica.Location = new System.Drawing.Point(630, 259);
-            this.rtxtGramatica.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.rtxtGramatica.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(36)))), ((int)(((byte)(36)))), ((int)(((byte)(36)))));
+            this.rtxtGramatica.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.rtxtGramatica.Font = new System.Drawing.Font("Consolas", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.rtxtGramatica.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(192)))), ((int)(((byte)(192)))));
+            this.rtxtGramatica.Location = new System.Drawing.Point(512, 342);
+            this.rtxtGramatica.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.rtxtGramatica.Name = "rtxtGramatica";
-            this.rtxtGramatica.Size = new System.Drawing.Size(673, 229);
+            this.rtxtGramatica.Size = new System.Drawing.Size(498, 347);
             this.rtxtGramatica.TabIndex = 5;
             this.rtxtGramatica.Text = "";
             // 
             // rtxttokens
             // 
-            this.rtxttokens.BackColor = System.Drawing.Color.LightGray;
-            this.rtxttokens.Font = new System.Drawing.Font("Consolas", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.rtxttokens.ForeColor = System.Drawing.SystemColors.Highlight;
-            this.rtxttokens.Location = new System.Drawing.Point(626, 14);
-            this.rtxttokens.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.rtxttokens.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(71)))), ((int)(((byte)(71)))), ((int)(((byte)(71)))));
+            this.rtxttokens.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.rtxttokens.Font = new System.Drawing.Font("Consolas", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.rtxttokens.ForeColor = System.Drawing.Color.White;
+            this.rtxttokens.Location = new System.Drawing.Point(512, 11);
+            this.rtxttokens.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.rtxttokens.Name = "rtxttokens";
-            this.rtxttokens.Size = new System.Drawing.Size(673, 229);
+            this.rtxttokens.Size = new System.Drawing.Size(498, 304);
             this.rtxttokens.TabIndex = 4;
             this.rtxttokens.Text = "";
             this.rtxttokens.TextChanged += new System.EventHandler(this.rtxttokens_TextChanged);
             // 
             // Form1
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(14F, 28F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.Color.RoyalBlue;
-            this.ClientSize = new System.Drawing.Size(1877, 793);
-            this.Controls.Add(this.rtxtGramatica);
+            this.BackColor = System.Drawing.Color.Gray;
+            this.ClientSize = new System.Drawing.Size(1022, 701);
             this.Controls.Add(this.rtxttokens);
             this.Controls.Add(this.btnGramatica);
             this.Controls.Add(this.lblConstantesNumericas);
@@ -294,8 +317,9 @@
             this.Controls.Add(this.lblNumRenglon);
             this.Controls.Add(this.btnEjecutar);
             this.Controls.Add(this.rtxtCodigo);
-            this.Font = new System.Drawing.Font("Century Gothic", 12F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.Margin = new System.Windows.Forms.Padding(5, 4, 5, 4);
+            this.Controls.Add(this.rtxtGramatica);
+            this.Font = new System.Drawing.Font("Consolas", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.Name = "Form1";
             this.Text = "Printer Language";
             ((System.ComponentModel.ISupportInitialize)(this.dgvIdentificadores)).EndInit();
