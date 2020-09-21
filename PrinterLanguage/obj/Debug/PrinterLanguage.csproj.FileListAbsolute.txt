@@ -65,3 +65,18 @@ E:\edd-g\Documents\AUTOMATAS II\Charcas-Automatas-master\PrinterLanguage\bin\Deb
 E:\edd-g\Documents\AUTOMATAS II\Charcas-Automatas-master\PrinterLanguage\bin\Debug\K4os.Compression.LZ4.dll
 E:\edd-g\Documents\AUTOMATAS II\Charcas-Automatas-master\PrinterLanguage\bin\Debug\K4os.Hash.xxHash.dll
 E:\edd-g\Documents\AUTOMATAS II\Charcas-Automatas-master\PrinterLanguage\bin\Debug\System.Runtime.CompilerServices.Unsafe.dll
+C:\Users\ajedr\OneDrive\Documentos\GitHub\Automatasxd\PrinterLanguage\bin\Debug\PrinterLanguage.exe.config
+C:\Users\ajedr\OneDrive\Documentos\GitHub\Automatasxd\PrinterLanguage\bin\Debug\PrinterLanguage.exe
+C:\Users\ajedr\OneDrive\Documentos\GitHub\Automatasxd\PrinterLanguage\bin\Debug\PrinterLanguage.pdb
+C:\Users\ajedr\OneDrive\Documentos\GitHub\Automatasxd\PrinterLanguage\bin\Debug\MySql.Data.dll
+C:\Users\ajedr\OneDrive\Documentos\GitHub\Automatasxd\PrinterLanguage\bin\Debug\Google.Protobuf.dll
+C:\Users\ajedr\OneDrive\Documentos\GitHub\Automatasxd\PrinterLanguage\bin\Debug\BouncyCastle.Crypto.dll
+C:\Users\ajedr\OneDrive\Documentos\GitHub\Automatasxd\PrinterLanguage\bin\Debug\MySql.Data.xml
+C:\Users\ajedr\OneDrive\Documentos\GitHub\Automatasxd\PrinterLanguage\obj\Debug\PrinterLanguage.csprojAssemblyReference.cache
+C:\Users\ajedr\OneDrive\Documentos\GitHub\Automatasxd\PrinterLanguage\obj\Debug\PrinterLanguage.Form1.resources
+C:\Users\ajedr\OneDrive\Documentos\GitHub\Automatasxd\PrinterLanguage\obj\Debug\PrinterLanguage.Properties.Resources.resources
+C:\Users\ajedr\OneDrive\Documentos\GitHub\Automatasxd\PrinterLanguage\obj\Debug\PrinterLanguage.csproj.GenerateResource.cache
+C:\Users\ajedr\OneDrive\Documentos\GitHub\Automatasxd\PrinterLanguage\obj\Debug\PrinterLanguage.csproj.CoreCompileInputs.cache
+C:\Users\ajedr\OneDrive\Documentos\GitHub\Automatasxd\PrinterLanguage\obj\Debug\PrinterLanguage.csproj.CopyComplete
+C:\Users\ajedr\OneDrive\Documentos\GitHub\Automatasxd\PrinterLanguage\obj\Debug\PrinterLanguage.exe
+C:\Users\ajedr\OneDrive\Documentos\GitHub\Automatasxd\PrinterLanguage\obj\Debug\PrinterLanguage.pdb
