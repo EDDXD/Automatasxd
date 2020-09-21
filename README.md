@@ -1,2 +1,2 @@
-# Programa automatas juasjuas xdxd 
+# Ponte a trabajar charcas 
  
