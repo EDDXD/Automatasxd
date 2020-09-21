@@ -121,6 +121,12 @@ namespace PrinterLanguage
                             }
 
                             txtCadenaDeTokens.Text = txtCadenaDeTokens.Text + token + " ";
+                            //--------------------------CODIGO NUEVO/SEMANTICA-------------------------//
+                            PrimeraPasada primeraPasada = new PrimeraPasada();
+                            primeraPasada.TipoDato(txtCadenaDeTokens.Text);
+                            MessageBox.Show(txtCadenaDeTokens.Text);
+                            //------------------------------------------------------------------------//
+
                             apuntador = "0";
                             subcadena = "";
                         }

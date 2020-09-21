@@ -12,9 +12,10 @@ namespace PrinterLanguage
     class PrimeraPasada
     {
 
-        public void TipoDato()
+        public void TipoDato(string cadenaToken)
         {
             //ESTO ES UNA PRUEBA
+
         }
     }
 }
