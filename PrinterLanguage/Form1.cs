@@ -134,12 +134,20 @@ namespace PrinterLanguage
                 rtxtCodigoIntermedio.Text += txtCadenaDeTokens.Text + "\n";
                 txtSubCadenaAEvaluar.Clear();
                 txtCadenaDeTokens.Clear();
-                rtxttokens.Text += aux2 + "\n";
+                //esto quita el ultimo salto de linea innecesario en el rtxttokens que nos causa error en gramática
+                if (x < rtxtCodigo.Lines.Count()-2)
+                {
+                    rtxttokens.Text += aux2 + "\n";
+                }
+                else
+                {
+                    rtxttokens.Text += aux2;
+                }
                 aux2 = "";
             }
             txtNumRenglon.Clear();
             MessageBox.Show("¡Cadena totalmente evaluada con éxito!", "", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            
+            //rtxttokens.Text = rtxttokens.Text.Replace("\n", ""); <-- para eliminar saltos de linea but no sirve xd
         }
 
         public string Recorrer(string apuntador, string caracter)

@@ -93,3 +93,26 @@ C:\Users\maroh\OneDrive\Documents\7 A 2020\Lenguajes y Autómatas 2\P1\PrinterLa
 C:\Users\maroh\OneDrive\Documents\7 A 2020\Lenguajes y Autómatas 2\P1\PrinterLanguage\Automatasxd\PrinterLanguage\obj\Debug\PrinterLanguage.csproj.CopyComplete
 C:\Users\maroh\OneDrive\Documents\7 A 2020\Lenguajes y Autómatas 2\P1\PrinterLanguage\Automatasxd\PrinterLanguage\obj\Debug\PrinterLanguage.exe
 C:\Users\maroh\OneDrive\Documents\7 A 2020\Lenguajes y Autómatas 2\P1\PrinterLanguage\Automatasxd\PrinterLanguage\obj\Debug\PrinterLanguage.pdb
+E:\edd-g\Documents\AUTOMATAS II\Automatasxd\PrinterLanguage\bin\Debug\PrinterLanguage.exe.config
+E:\edd-g\Documents\AUTOMATAS II\Automatasxd\PrinterLanguage\bin\Debug\PrinterLanguage.exe
+E:\edd-g\Documents\AUTOMATAS II\Automatasxd\PrinterLanguage\bin\Debug\PrinterLanguage.pdb
+E:\edd-g\Documents\AUTOMATAS II\Automatasxd\PrinterLanguage\bin\Debug\MySql.Data.dll
+E:\edd-g\Documents\AUTOMATAS II\Automatasxd\PrinterLanguage\bin\Debug\Google.Protobuf.dll
+E:\edd-g\Documents\AUTOMATAS II\Automatasxd\PrinterLanguage\bin\Debug\Zstandard.Net.dll
+E:\edd-g\Documents\AUTOMATAS II\Automatasxd\PrinterLanguage\bin\Debug\K4os.Compression.LZ4.Streams.dll
+E:\edd-g\Documents\AUTOMATAS II\Automatasxd\PrinterLanguage\bin\Debug\BouncyCastle.Crypto.dll
+E:\edd-g\Documents\AUTOMATAS II\Automatasxd\PrinterLanguage\bin\Debug\Ubiety.Dns.Core.dll
+E:\edd-g\Documents\AUTOMATAS II\Automatasxd\PrinterLanguage\bin\Debug\Renci.SshNet.dll
+E:\edd-g\Documents\AUTOMATAS II\Automatasxd\PrinterLanguage\bin\Debug\System.Buffers.dll
+E:\edd-g\Documents\AUTOMATAS II\Automatasxd\PrinterLanguage\bin\Debug\K4os.Compression.LZ4.dll
+E:\edd-g\Documents\AUTOMATAS II\Automatasxd\PrinterLanguage\bin\Debug\K4os.Hash.xxHash.dll
+E:\edd-g\Documents\AUTOMATAS II\Automatasxd\PrinterLanguage\bin\Debug\System.Runtime.CompilerServices.Unsafe.dll
+E:\edd-g\Documents\AUTOMATAS II\Automatasxd\PrinterLanguage\bin\Debug\MySql.Data.xml
+E:\edd-g\Documents\AUTOMATAS II\Automatasxd\PrinterLanguage\obj\Debug\PrinterLanguage.csprojAssemblyReference.cache
+E:\edd-g\Documents\AUTOMATAS II\Automatasxd\PrinterLanguage\obj\Debug\PrinterLanguage.Form1.resources
+E:\edd-g\Documents\AUTOMATAS II\Automatasxd\PrinterLanguage\obj\Debug\PrinterLanguage.Properties.Resources.resources
+E:\edd-g\Documents\AUTOMATAS II\Automatasxd\PrinterLanguage\obj\Debug\PrinterLanguage.csproj.GenerateResource.cache
+E:\edd-g\Documents\AUTOMATAS II\Automatasxd\PrinterLanguage\obj\Debug\PrinterLanguage.csproj.CoreCompileInputs.cache
+E:\edd-g\Documents\AUTOMATAS II\Automatasxd\PrinterLanguage\obj\Debug\PrinterLanguage.csproj.CopyComplete
+E:\edd-g\Documents\AUTOMATAS II\Automatasxd\PrinterLanguage\obj\Debug\PrinterLanguage.exe
+E:\edd-g\Documents\AUTOMATAS II\Automatasxd\PrinterLanguage\obj\Debug\PrinterLanguage.pdb
