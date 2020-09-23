@@ -46,8 +46,92 @@ namespace PrinterLanguage
 
         }
 
+        List<Identificador> misIden = new List<Identificador>();
+        int intIdenActual = 0, intContarIdens = 1, intContarEnteros = 1;
+
+        private void DetectarTipos()
+        {
+            intContarIdens = 1;
+            int intNumeroPalabraActual = 0;
+            misIden = new List<Identificador>();
+            Identificador miIdeTemp = new Identificador();
+            bool blnRepetido = false;
+            int intRepetido = 0;
+
+            foreach (string linea in rtxtCodigo.Lines) //POR CADA LINEA
+            {
+                intRepetido = 0;
+                intNumeroPalabraActual = 0;
+                foreach (string palabra in linea.Split(' ')) //RECORRE CADA PALABRA
+                {
+                    if (palabra.Contains('#') && linea.Split(' ').Length - 1 >= intNumeroPalabraActual + 3)
+                    {
+                        if (linea.Split(' ')[intNumeroPalabraActual + 1].Equals("="))
+                        {
+                            string strPalabraSiguiente = linea.Split(' ')[intNumeroPalabraActual + 2];
+                            string strContenido = strPalabraSiguiente;
+                            int intContadorAux = intNumeroPalabraActual + 2;
+
+                            foreach (Identificador id in misIden)
+                            {
+                                if (id.Nombre.Equals(palabra))
+                                {
+                                    blnRepetido = true;
+                                    break;
+                                }
+                                intRepetido++;
+                            }
+
+                            if (strPalabraSiguiente.Equals("["))
+                            {
+                                strContenido = "";
+                                do
+                                {
+                                    strContenido += " " + strPalabraSiguiente;
+                                    intContadorAux++;
+                                    strPalabraSiguiente = linea.Split(' ')[intContadorAux];
+                                } while (strPalabraSiguiente != "]");
+
+                                if (blnRepetido)
+                                {
+                                    misIden[intRepetido].Contenido = strContenido + " ]";
+                                    intRepetido = 0;
+                                }
+                                else
+                                {
+                                    misIden.Add(new Identificador("IDE" + intContarIdens, palabra, "Cadena", strContenido + " ]"));
+                                    intContarIdens++;
+                                }
+                                blnRepetido = false;
+                            }
+                            else
+                            {
+                                if (blnRepetido)
+                                {
+                                    misIden[intRepetido].Contenido = strContenido;
+                                    intRepetido = 0;
+                                }
+                                else
+                                {
+                                    misIden.Add(new Identificador("IDE" + intContarIdens, palabra, "Entero", strContenido));
+                                    intContarIdens++;
+                                }
+                                blnRepetido = false;
+                            }
+                        }
+                    }
+                    intNumeroPalabraActual++;
+                }
+            }
+        }
+
         private void btnEjecutar_Click(object sender, EventArgs e)
         {
+            DetectarTipos();
+            intIdenActual = 0;
+            rtxttokens.Text = "";
+            intContarEnteros = 1;
+
             string aux1 = "";
             string aux2 = "";
             bool bandera = false;
@@ -66,9 +150,9 @@ namespace PrinterLanguage
 
                 for (int y = 0; y < cadena.Length; y++)
                 {
-                    if(cadena[y].ToString() == "[" || cadena[y].ToString() == "\\")
+                    if (cadena[y].ToString() == "[" || cadena[y].ToString() == "\\")
                     {
-                        if(cadena[y].ToString() == "\\" && cadena[y+1].ToString() == " ")
+                        if (cadena[y].ToString() == "\\" && cadena[y + 1].ToString() == " ")
                         {
                             esp = false;
                         }
@@ -77,7 +161,7 @@ namespace PrinterLanguage
                             esp = true;
                         }
                     }
-                    else if(cadena[y].ToString() == "]")
+                    else if (cadena[y].ToString() == "]")
                     {
                         esp = false;
                     }
@@ -92,19 +176,45 @@ namespace PrinterLanguage
                         {
                             apuntador = Recorrer(apuntador, "DEL");
                             token = Recorrer(apuntador, "TOKEN");
-
+                            Identificador ideTemporal;
                             if (token == "IDE")
                             {
                                 //
-                                token = agregarDatosEnTablas("Identificador", token, subcadena, subcadena, subcadena);
-                                mostrarDatosEnTablas();
+                                int intIdAux = 0;
+                                bool blnRepetido = false;
+                                foreach (Identificador identificador in misIden)
+                                {
+                                    if (identificador.Nombre.Equals(subcadena))
+                                    {
+                                        blnRepetido = true;
+                                        break;
+                                    }
+                                    intIdAux++;
+                                }
+                                if (blnRepetido)
+                                {
+                                    ideTemporal = new Identificador(misIden.ElementAt(intIdAux).Token, misIden.ElementAt(intIdAux).Nombre,
+                                                                    misIden.ElementAt(intIdAux).Tipo, misIden.ElementAt(intIdAux).Contenido);
+                                }
+                                else
+                                {
+                                    ideTemporal = new Identificador(misIden.ElementAt(intIdenActual).Token, misIden.ElementAt(intIdenActual).Nombre,
+                                                                    misIden.ElementAt(intIdenActual).Tipo, misIden.ElementAt(intIdenActual).Contenido);
+                                }
+
+                                actualizarTablaSimbolos(ideTemporal);
+                                //token = agregarDatosEnTablas("Identificador", ideTemporal.Token, ideTemporal.Nombre, ideTemporal.Tipo, ideTemporal.Contenido);
+                                //mostrarDatosEnTablas();
                                 aux1 = "IDEN";
                                 bandera = true;
+                                intIdenActual++;
                             }
                             else if (token == "CNU")
                             {
-                                token = agregarDatosEnTablas("ConstanteNumerica", token, subcadena, subcadena, subcadena);
-                                mostrarDatosEnTablas();
+                                //ideTemporal = new Identificador("CNU"+intContarEnteros, "", "", misIden.ElementAt(intIdenActual-1).Contenido);
+
+                                //token = agregarDatosEnTablas("ConstanteNumerica", token, subcadena, subcadena, subcadena);
+                                //mostrarDatosEnTablas();
                                 aux1 = "CNUE";
                                 bandera = true;
                             }
@@ -139,7 +249,15 @@ namespace PrinterLanguage
             }
             txtNumRenglon.Clear();
             MessageBox.Show("¡Cadena totalmente evaluada con éxito!", "", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            
+            updateCN(new MySqlConnection(cadenaConexion));
+            mostrarDatosEnTablas();
+
+            //string str = "";
+            //foreach (Identificador idee in misIden)
+            //{
+            //    str += idee.Token;
+            //}
+            //MessageBox.Show(str);
         }
 
         public string Recorrer(string apuntador, string caracter)
@@ -148,14 +266,14 @@ namespace PrinterLanguage
 
             mySQLCon.Open();
             MySqlDataReader myDtRd;
-            MySqlCommand myQuery = new MySqlCommand("SELECT " +caracter + " FROM M WHERE ID = " + apuntador, mySQLCon);
+            MySqlCommand myQuery = new MySqlCommand("SELECT " + caracter + " FROM M WHERE ID = " + apuntador, mySQLCon);
             myDtRd = myQuery.ExecuteReader();
             string token = "";
             string nomCol = "";
             string a = "";
             while (myDtRd.Read())
             {
-                if(myDtRd.GetName(0) == "TOKEN")
+                if (myDtRd.GetName(0) == "TOKEN")
                 {
                     nomCol = myDtRd.GetName(0);
                     token = myDtRd.GetString(0);
@@ -172,6 +290,66 @@ namespace PrinterLanguage
             }
             mySQLCon.Close();
             return a;
+        }
+
+        public void actualizarTablaSimbolos(Identificador miIden)
+        {
+            MySqlConnection con = new MySqlConnection(cadenaConexion);
+            con.Open();
+
+            MySqlCommand qryActualizarTablas;
+
+            qryActualizarTablas = new MySqlCommand("SELECT COUNT(*) FROM Identificador WHERE NOMBRE = '" + miIden.Nombre + "'", con);
+            if (int.Parse(qryActualizarTablas.ExecuteScalar().ToString()) > 0)
+            {
+                qryActualizarTablas = new MySqlCommand("UPDATE Identificador SET CONTENIDO = '" + miIden.Contenido + "', " +
+                                                        "TIPO = '" + (miIden.Contenido.Contains("[") ? "Cadena" : "Entero") + "' " +
+                                                        "WHERE NOMBRE = '" + miIden.Nombre + "'", con);
+                qryActualizarTablas.ExecuteNonQuery();
+                if (!miIden.Contenido.Contains("["))
+                {
+                    //qryActualizarTablas = new MySqlCommand("UPDATE ConstanteNumerica SET CONTENIDO = '" + miIden.Contenido + "' WHERE TOKEN = 'CNU" + (intIdenActual-1) + "'", con);
+                    //qryActualizarTablas.ExecuteNonQuery();
+                    //intContarEnteros++;
+                    updateCN(con);
+                }
+            }
+            else
+            {
+                if (miIden.Tipo.Equals("Entero"))
+                {
+                    //qryActualizarTablas = new MySqlCommand("INSERT INTO ConstanteNumerica (TOKEN, CONTENIDO) VALUES ( 'CNU" + intContarEnteros + "', '" + miIden.Contenido + "' )", con);
+                    //intContarEnteros++;
+                    //qryActualizarTablas.ExecuteNonQuery();
+                    updateCN(con);
+                }
+                qryActualizarTablas = new MySqlCommand("INSERT INTO Identificador (TOKEN, NOMBRE, TIPO, CONTENIDO) VALUES ( '" + miIden.Token + "', '" + miIden.Nombre + "', '" + miIden.Tipo + "', '" + miIden.Contenido + "' )", con);
+                qryActualizarTablas.ExecuteNonQuery();
+            }
+
+            con.Close();
+            mostrarDatosEnTablas();
+        }
+
+        public void updateCN(MySqlConnection connection)
+        {
+            MySqlCommand qry = new MySqlCommand("DELETE FROM ConstanteNumerica", connection);
+            if (!connection.State.ToString().Equals("Open"))
+            {
+                connection.Open();
+            }
+            qry.ExecuteNonQuery();
+            int aux = 1;
+
+            foreach (DataGridViewRow row in dgvIdentificadores.Rows)
+            {
+                if (row.Cells["TIPO"].Value.ToString().Equals("Entero"))
+                {
+                    qry = new MySqlCommand("INSERT INTO ConstanteNumerica (TOKEN, CONTENIDO) VALUES ( 'CNU" + aux + "', '" + row.Cells["CONTENIDO"].Value.ToString() + "' )", connection);
+                    qry.ExecuteNonQuery();
+                    aux++;
+                }
+            }
         }
 
         public string agregarDatosEnTablas(string tabla, string token, string nombre, string tipo, string contenido)
@@ -192,16 +370,16 @@ namespace PrinterLanguage
             if (filas == 0)
             {
                 MySqlCommand myQuery2;
+                mySQLCon.Open();
                 if (tabla.Equals("Identificador"))
                 {
-                    myQuery2 = new MySqlCommand("INSERT INTO " + tabla + " (TOKEN, NOMBRE, TIPO, CONTENIDO) VALUES ( '" + token + "1', '" + nombre + "', '" + tipo + "', '" + contenido + "')", mySQLCon);
+                    myQuery2 = new MySqlCommand("INSERT INTO " + tabla + " (TOKEN, NOMBRE, TIPO, CONTENIDO) VALUES ( '" + token + "', '" + nombre + "', '" + tipo + "', '" + contenido + "')", mySQLCon);
                 }
                 else
                 {
                     myQuery2 = new MySqlCommand("INSERT INTO " + tabla + " (TOKEN, CONTENIDO) VALUES ( '" + token + "1', '" + contenido + "')", mySQLCon);
                 }
 
-                mySQLCon.Open();
                 myQuery2.ExecuteNonQuery();
                 mySQLCon.Close();
                 return token + 1;
@@ -221,7 +399,7 @@ namespace PrinterLanguage
                 }
                 mySQLCon.Close();
 
-                if(c == contenido)
+                if (c == contenido)
                 {
                     return t;
                 }
@@ -253,7 +431,6 @@ namespace PrinterLanguage
             myDtAd2.Fill(myDtTb2);
             dgvConstantesNumericas.DataSource = myDtTb2;
             mySQLCon.Close();
-
         }
 
         public void borrarDatosEnTablas()
@@ -282,15 +459,15 @@ namespace PrinterLanguage
             }
             mySQLCon.Close();
 
-            if(id > 0)
+            if (id > 0)
             {
                 mySQLCon.Open();
                 MySqlCommand myQuery3 = new MySqlCommand("TRUNCATE Identificador", mySQLCon);
                 myQuery3.ExecuteNonQuery();
                 mySQLCon.Close();
             }
-            
-            if(cn > 0)
+
+            if (cn > 0)
             {
                 mySQLCon.Open();
                 MySqlCommand myQuery4 = new MySqlCommand("TRUNCATE ConstanteNumerica", mySQLCon);
@@ -355,8 +532,8 @@ namespace PrinterLanguage
 
         private void rtxttokens_TextChanged(object sender, EventArgs e)
         {
-           
-            
+
+
         }
 
         private void btnconvertir_Click(object sender, EventArgs e)
