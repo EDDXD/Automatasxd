@@ -64,20 +64,37 @@ namespace PrinterLanguage
                 intNumeroPalabraActual = 0;
                 foreach (string palabra in linea.Split(' ')) //RECORRE CADA PALABRA
                 {
-                    if (palabra.Contains('#') && linea.Split(' ').Length - 1 >= intNumeroPalabraActual + 3)
+                    if ((palabra.Contains('#') && linea.Split(' ').Length - 1 >= intNumeroPalabraActual + 3) || palabra.Equals("CAPTURAR"))
                     {
-                        if (linea.Split(' ')[intNumeroPalabraActual + 1].Equals("="))
+                        if (linea.Split(' ')[intNumeroPalabraActual + 1].Equals("=") || palabra.Equals("CAPTURAR"))
                         {
                             string strPalabraSiguiente = linea.Split(' ')[intNumeroPalabraActual + 2];
                             string strContenido = strPalabraSiguiente;
                             int intContadorAux = intNumeroPalabraActual + 2;
 
+                            if (palabra.Equals("CAPTURAR"))
+                            {
+                                strPalabraSiguiente = linea.Split(' ')[intNumeroPalabraActual + 1];
+                                intContadorAux = intNumeroPalabraActual + 1;
+                            }
+
                             foreach (Identificador id in misIden)
                             {
-                                if (id.Nombre.Equals(palabra))
+                                if (palabra.Equals("CAPTURAR"))
                                 {
-                                    blnRepetido = true;
-                                    break;
+                                    if (id.Nombre.Equals(strPalabraSiguiente))
+                                    {
+                                        blnRepetido = true;
+                                        break;
+                                    }
+                                }
+                                else
+                                {
+                                    if (id.Nombre.Equals(palabra))
+                                    {
+                                        blnRepetido = true;
+                                        break;
+                                    }
                                 }
                                 intRepetido++;
                             }
@@ -104,7 +121,7 @@ namespace PrinterLanguage
                                 }
                                 blnRepetido = false;
                             }
-                            else
+                            else if (palabra != "CAPTURAR")
                             {
                                 if (blnRepetido)
                                 {
@@ -114,6 +131,21 @@ namespace PrinterLanguage
                                 else
                                 {
                                     misIden.Add(new Identificador("IDE" + intContarIdens, palabra, "Entero", strContenido));
+                                    intContarIdens++;
+                                }
+                                blnRepetido = false;
+                            }
+                            else
+                            {
+                                if (blnRepetido)
+                                {
+                                    misIden[intRepetido].Contenido = strContenido;
+                                    misIden[intRepetido].Tipo = (strContenido.Contains("[")) ? "Cadena" : "Entero";
+                                    intRepetido = 0;
+                                }
+                                else
+                                {
+                                    misIden.Add(new Identificador("IDE" + intContarIdens, strPalabraSiguiente, "No definido", "null"));
                                     intContarIdens++;
                                 }
                                 blnRepetido = false;
