@@ -47,7 +47,7 @@ namespace PrinterLanguage
         }
 
         List<Identificador> misIden = new List<Identificador>();
-        int intIdenActual = 0, intContarIdens = 1, intContarEnteros = 1;
+        int intIdenActual = 0, intContarIdens = 1, intLineaCodigoIntermedio = 0;
 
         private void DetectarTipos()
         {
@@ -162,7 +162,8 @@ namespace PrinterLanguage
             DetectarTipos();
             intIdenActual = 0;
             rtxttokens.Text = "";
-            intContarEnteros = 1;
+            rtxTipos.Text = "";
+            intLineaCodigoIntermedio = 0;
 
             string aux1 = "";
             string aux2 = "";
@@ -237,7 +238,7 @@ namespace PrinterLanguage
                                 actualizarTablaSimbolos(ideTemporal);
                                 //token = agregarDatosEnTablas("Identificador", ideTemporal.Token, ideTemporal.Nombre, ideTemporal.Tipo, ideTemporal.Contenido);
                                 //mostrarDatosEnTablas();
-                                aux1 = "IDEN";
+                                aux1 = ideTemporal.Token;
                                 bandera = true;
                                 intIdenActual++;
                             }
@@ -261,7 +262,7 @@ namespace PrinterLanguage
                                 aux2 = aux2 + token + " ";
                             }
 
-                            txtCadenaDeTokens.Text = txtCadenaDeTokens.Text + token + " ";
+                            txtCadenaDeTokens.Text = txtCadenaDeTokens.Text + (token.Equals("IDE")?token+="N":(token.Equals("CNU")?token+="E":token)) + " ";
                             apuntador = "0";
                             subcadena = "";
                         }
@@ -277,6 +278,7 @@ namespace PrinterLanguage
                 txtSubCadenaAEvaluar.Clear();
                 txtCadenaDeTokens.Clear();
                 rtxttokens.Text += aux2 + "\n";
+                rtxTipos.Text += GenerarTokensTipos() + "\n";
                 aux2 = "";
             }
             txtNumRenglon.Clear();
@@ -290,6 +292,38 @@ namespace PrinterLanguage
             //    str += idee.Token;
             //}
             //MessageBox.Show(str);
+        }
+        public string GenerarTokensTipos()
+        {
+            string strAux = "";
+            string[] strLinea = rtxttokens.Lines.ToArray()[intLineaCodigoIntermedio].Split(' ');
+            foreach (string s in strLinea)
+            {
+                if (s.Equals("CNUE"))
+                {
+                    strAux += "entero ";
+                }
+                else if (s.Contains("IDE"))
+                {
+                    foreach (Identificador i in misIden)
+                    {
+                        if (i.Token.Equals(s))
+                        {
+                            strAux += i.Tipo.ToLower()+" ";
+                        }
+                    }
+                }
+                else if (s.Equals("CADE"))
+                {
+                    strAux += "cadena";
+                }
+                else
+                {
+                    strAux += s+" ";
+                }
+            }
+            intLineaCodigoIntermedio++;
+            return strAux;
         }
 
         public string Recorrer(string apuntador, string caracter)

@@ -165,10 +165,10 @@
             this.rtxtCodigoIntermedio.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.rtxtCodigoIntermedio.Font = new System.Drawing.Font("Consolas", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.rtxtCodigoIntermedio.ForeColor = System.Drawing.Color.White;
-            this.rtxtCodigoIntermedio.Location = new System.Drawing.Point(9, 438);
+            this.rtxtCodigoIntermedio.Location = new System.Drawing.Point(705, 33);
             this.rtxtCodigoIntermedio.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.rtxtCodigoIntermedio.Name = "rtxtCodigoIntermedio";
-            this.rtxtCodigoIntermedio.Size = new System.Drawing.Size(681, 232);
+            this.rtxtCodigoIntermedio.Size = new System.Drawing.Size(498, 378);
             this.rtxtCodigoIntermedio.TabIndex = 0;
             this.rtxtCodigoIntermedio.Text = "";
             // 
@@ -294,10 +294,10 @@
             this.rtxttokens.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.rtxttokens.Font = new System.Drawing.Font("Consolas", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.rtxttokens.ForeColor = System.Drawing.Color.White;
-            this.rtxttokens.Location = new System.Drawing.Point(705, 33);
+            this.rtxttokens.Location = new System.Drawing.Point(11, 438);
             this.rtxttokens.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.rtxttokens.Name = "rtxttokens";
-            this.rtxttokens.Size = new System.Drawing.Size(498, 378);
+            this.rtxttokens.Size = new System.Drawing.Size(679, 231);
             this.rtxttokens.TabIndex = 4;
             this.rtxttokens.Text = "";
             this.rtxttokens.TextChanged += new System.EventHandler(this.rtxttokens_TextChanged);
