@@ -101,6 +101,7 @@ namespace PrinterLanguage
 
                             if (strPalabraSiguiente.Equals("["))
                             {
+                                //[]
                                 strContenido = "";
                                 do
                                 {
@@ -315,7 +316,7 @@ namespace PrinterLanguage
                 }
                 else if (s.Equals("CADE"))
                 {
-                    strAux += "cadena";
+                    strAux += "cadena ";
                 }
                 else
                 {
@@ -550,17 +551,17 @@ namespace PrinterLanguage
             string primeraCadena = "";
             string segundaCadena = "";
 
-            for (int x = 0; x < rtxttokens.Lines.Count(); x++)
+            for (int x = 0; x < rtxtCodigoIntermedio.Lines.Count(); x++)
             {
-                primeraCadena = rtxttokens.Lines[x];
-                segundaCadena = rtxttokens.Lines[x];
+                primeraCadena = rtxtCodigoIntermedio.Lines[x];
+                segundaCadena = rtxtCodigoIntermedio.Lines[x];
                 bool bandera = true;
 
                 do
                 {
                     mySQLCon.Open();
                     MySqlDataReader myDtRd;
-                    MySqlCommand myQuery = new MySqlCommand("SELECT PRODUCTO, INSTRUCCION, LENGTH(INSTRUCCION) FROM G ORDER BY PRODUCTO ASC, LENGTH(INSTRUCCION) DESC", mySQLCon);
+                    MySqlCommand myQuery = new MySqlCommand("SELECT PRODUCTO, INSTRUCCION, LENGTH(INSTRUCCION) FROM GG ORDER BY LENGTH(INSTRUCCION) DESC", mySQLCon);
                     myDtRd = myQuery.ExecuteReader();
 
                     while (myDtRd.Read())
