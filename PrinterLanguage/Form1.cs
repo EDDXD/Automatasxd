@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using MySql.Data.MySqlClient;
 using System.IO;
-
+using System.Text.RegularExpressions;
 
 namespace PrinterLanguage
 {
@@ -66,11 +66,11 @@ namespace PrinterLanguage
                 {
                     if ((palabra.Contains('#') && linea.Split(' ').Length - 1 >= intNumeroPalabraActual + 3) || palabra.Equals("CAPTURAR"))
                     {
+                        string strPalabraSiguiente = linea.Split(' ')[intNumeroPalabraActual + 2];
+                        string strContenido = strPalabraSiguiente;
+                        int intContadorAux = intNumeroPalabraActual + 2;
                         if (linea.Split(' ')[intNumeroPalabraActual + 1].Equals("=") || palabra.Equals("CAPTURAR"))
                         {
-                            string strPalabraSiguiente = linea.Split(' ')[intNumeroPalabraActual + 2];
-                            string strContenido = strPalabraSiguiente;
-                            int intContadorAux = intNumeroPalabraActual + 2;
 
                             if (palabra.Equals("CAPTURAR"))
                             {
@@ -124,6 +124,22 @@ namespace PrinterLanguage
                             }
                             else if (palabra != "CAPTURAR")
                             {
+                                string strPalabraSiguienteSiguiente = linea.Split(' ')[intNumeroPalabraActual + 3];
+                                Regex regexp = new Regex(@"^\d+|/+|/-|/*|//|^|#\w+$");
+
+                                if (strPalabraSiguienteSiguiente.Contains("+") || strPalabraSiguienteSiguiente.Contains("-") ||
+                                    strPalabraSiguienteSiguiente.Contains("-") || strPalabraSiguienteSiguiente.Contains("*") ||
+                                    strPalabraSiguienteSiguiente.Contains("^"))
+                                {
+                                    while (regexp.IsMatch(strPalabraSiguienteSiguiente) && strPalabraSiguienteSiguiente != "")
+                                    {
+                                        intContadorAux++;
+                                        strContenido += " " + strPalabraSiguienteSiguiente;
+                                        strPalabraSiguienteSiguiente = linea.Split(' ')[intContadorAux + 1];
+                                    }
+                                }
+
+
                                 if (blnRepetido)
                                 {
                                     misIden[intRepetido].Contenido = strContenido;
@@ -263,7 +279,7 @@ namespace PrinterLanguage
                                 aux2 = aux2 + token + " ";
                             }
 
-                            txtCadenaDeTokens.Text = txtCadenaDeTokens.Text + (token.Equals("IDE")?token+="N":(token.Equals("CNU")?token+="E":token)) + " ";
+                            txtCadenaDeTokens.Text = txtCadenaDeTokens.Text + (token.Equals("IDE") ? token += "N" : (token.Equals("CNU") ? token += "E" : token)) + " ";
                             apuntador = "0";
                             subcadena = "";
                         }
@@ -310,7 +326,7 @@ namespace PrinterLanguage
                     {
                         if (i.Token.Equals(s))
                         {
-                            strAux += i.Tipo.ToLower()+" ";
+                            strAux += i.Tipo.ToLower() + " ";
                         }
                     }
                 }
@@ -320,7 +336,7 @@ namespace PrinterLanguage
                 }
                 else
                 {
-                    strAux += s+" ";
+                    strAux += s + " ";
                 }
             }
             intLineaCodigoIntermedio++;
