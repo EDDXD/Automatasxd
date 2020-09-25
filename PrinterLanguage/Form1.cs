@@ -600,8 +600,6 @@ namespace PrinterLanguage
                         }
                     }
                     mySQLCon.Close();
-
-                    MessageBox.Show("'"+primeraCadena+"'");
                     if (primeraCadena == "S" || primeraCadena == "S " || primeraCadena == "")
                     {
                         bandera = false;
