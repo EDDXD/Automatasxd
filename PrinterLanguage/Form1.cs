@@ -567,8 +567,12 @@ namespace PrinterLanguage
             string segundaCadena = "";
             bool bandera = true;
 
+            List<int> listaErrores = new List<int>();
+            int intCortadorCiclo = 0;
+
             for (int x = 0; x < rtxtCodigoIntermedio.Lines.Count(); x++)
             {
+                intCortadorCiclo = 0;
                 primeraCadena = rtxtCodigoIntermedio.Lines[x];
                 segundaCadena = rtxtCodigoIntermedio.Lines[x];
                 bandera = true;
@@ -595,12 +599,24 @@ namespace PrinterLanguage
                         }
                     }
                     mySQLCon.Close();
-                    if (primeraCadena == "S" || primeraCadena == "S " || primeraCadena == "")
+                    intCortadorCiclo++;
+                    if (primeraCadena == "S" || primeraCadena == "S " || primeraCadena == "" || intCortadorCiclo >= 10)
                     {
                         bandera = false;
+                        if (intCortadorCiclo>= 10)
+                        {
+                            listaErrores.Add(x);
+                        }
                     }
 
                 } while (bandera);
+            }
+            if (listaErrores != null)
+            {
+                foreach (int item in listaErrores)
+                {
+                    MessageBox.Show("Error de sintaxis en la línea: " + (item + 1), "¡ERROR!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
             }
         }
 
@@ -610,8 +626,13 @@ namespace PrinterLanguage
             MySqlConnection conect = new MySqlConnection(cadenaConexiong);
             string strFirst = "", strSecond = "";
             bool blnBandera = true;
+
+            List<int> listaErrores = new List<int>();
+            int intCortadorCiclo = 0;
+
             for (int i = 0; i < rtxTipos.Lines.Count(); i++)
             {
+                intCortadorCiclo = 0;
                 strFirst = rtxTipos.Lines[i];
                 strSecond = rtxTipos.Lines[i];
                 blnBandera = true;
@@ -635,12 +656,23 @@ namespace PrinterLanguage
                         }
                     }
                     conect.Close();
-                    //MessageBox.Show("'" + strFirst + "'");
-                    if (strFirst.Contains("S ") || strFirst.Contains("ASG1") || strFirst.Equals(""))
+                    intCortadorCiclo++;
+                    if (strFirst.Contains("S ") || strFirst.Equals("") || intCortadorCiclo >= 10)
                     {
                         blnBandera = false;
+                        if (intCortadorCiclo >= 10)
+                        {
+                            listaErrores.Add(i);
+                        }
                     }
                 } while (blnBandera);
+            }
+            if (listaErrores != null)
+            {
+                foreach (int item in listaErrores)
+                {
+                    MessageBox.Show("Error de semántica en la línea: "+(item+1), "¡ERROR!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
             }
         }
 
