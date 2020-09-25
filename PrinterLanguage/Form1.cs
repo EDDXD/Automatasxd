@@ -601,7 +601,8 @@ namespace PrinterLanguage
                     }
                     mySQLCon.Close();
 
-                    if (primeraCadena == "S" || primeraCadena == "S ")
+                    MessageBox.Show("'"+primeraCadena+"'");
+                    if (primeraCadena == "S" || primeraCadena == "S " || primeraCadena == "")
                     {
                         bandera = false;
                         //rtxtGramatica.Text += primeraCadena + "\n";
