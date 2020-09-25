@@ -157,12 +157,11 @@ namespace PrinterLanguage
                                 if (blnRepetido)
                                 {
                                     misIden[intRepetido].Contenido = strContenido;
-                                    misIden[intRepetido].Tipo = (strContenido.Contains("[")) ? "Cadena" : "Entero";
                                     intRepetido = 0;
                                 }
                                 else
                                 {
-                                    misIden.Add(new Identificador("IDE" + intContarIdens, strPalabraSiguiente, "No definido", "null"));
+                                    misIden.Add(new Identificador("IDE" + intContarIdens, strPalabraSiguiente, "Cadena", "null"));
                                     intContarIdens++;
                                 }
                                 blnRepetido = false;
@@ -386,7 +385,7 @@ namespace PrinterLanguage
             if (int.Parse(qryActualizarTablas.ExecuteScalar().ToString()) > 0)
             {
                 qryActualizarTablas = new MySqlCommand("UPDATE Identificador SET CONTENIDO = '" + miIden.Contenido + "', " +
-                                                        "TIPO = '" + (miIden.Contenido.Contains("[") ? "Cadena" : "Entero") + "' " +
+                                                        "TIPO = '" + (miIden.Tipo) + "' " +
                                                         "WHERE NOMBRE = '" + miIden.Nombre + "'", con);
                 qryActualizarTablas.ExecuteNonQuery();
                 if (!miIden.Contenido.Contains("["))
@@ -566,12 +565,13 @@ namespace PrinterLanguage
 
             string primeraCadena = "";
             string segundaCadena = "";
+            bool bandera = true;
 
             for (int x = 0; x < rtxtCodigoIntermedio.Lines.Count(); x++)
             {
                 primeraCadena = rtxtCodigoIntermedio.Lines[x];
                 segundaCadena = rtxtCodigoIntermedio.Lines[x];
-                bool bandera = true;
+                bandera = true;
 
                 do
                 {
@@ -589,13 +589,8 @@ namespace PrinterLanguage
                                 MessageBox.Show("Cadena Principal: " + primeraCadena + "\nSe cambio: " + myDtRd.GetString(1) + "\nPor: " + myDtRd.GetString(0));
                                 segundaCadena = primeraCadena.Replace(myDtRd.GetString(1), myDtRd.GetString(0));
                                 primeraCadena = segundaCadena;
-                                //MessageBox.Show(primeraCadena + "\n" + segundaCadena);
                                 rtxtGramatica.Text += segundaCadena + "\n";
                                 break;
-                            }
-                            else
-                            {
-                                //MessageBox.Show("no hubo cambios");
                             }
                         }
                     }
@@ -603,12 +598,49 @@ namespace PrinterLanguage
                     if (primeraCadena == "S" || primeraCadena == "S " || primeraCadena == "")
                     {
                         bandera = false;
-                        //rtxtGramatica.Text += primeraCadena + "\n";
-                        //MessageBox.Show("ya hay una S, el recorrido termino");
                     }
 
                 } while (bandera);
-                //MessageBox.Show("ya salio del dowhile");
+            }
+        }
+
+        private void btnSemantica_Click(object sender, EventArgs e)
+        {
+            rtxtSemantica.Text = "";
+            MySqlConnection conect = new MySqlConnection(cadenaConexiong);
+            string strFirst = "", strSecond = "";
+            bool blnBandera = true;
+            for (int i = 0; i < rtxTipos.Lines.Count(); i++)
+            {
+                strFirst = rtxTipos.Lines[i];
+                strSecond = rtxTipos.Lines[i];
+                blnBandera = true;
+                MySqlDataReader myDtRd1;
+                MySqlCommand myQuery = new MySqlCommand("SELECT PRODUCTO, INSTRUCCION, LENGTH(INSTRUCCION) FROM SG ORDER BY LENGTH(INSTRUCCION) DESC", conect);
+                do
+                {
+                    conect.Open();
+                    myDtRd1 = myQuery.ExecuteReader();
+                    while (myDtRd1.Read())
+                    {
+                        if (strFirst.Length >= myDtRd1.GetInt32(2))
+                        {
+                            if (strFirst.Replace(myDtRd1.GetString(1), myDtRd1.GetString(0)) != strSecond)
+                            {
+                                MessageBox.Show("Cadena Principal: " + strFirst + "\nSe cambio: " + myDtRd1.GetString(1) + "\nPor: " + myDtRd1.GetString(0));
+                                strSecond = strFirst.Replace(myDtRd1.GetString(1), myDtRd1.GetString(0));
+                                strFirst = strSecond;
+                                rtxtSemantica.Text += strSecond + "\n";
+                            }
+                        }
+                    }
+                    conect.Close();
+                    //MessageBox.Show("'" + strFirst + "'");
+                    if (strFirst.Contains("S ") || strFirst.Contains("ASG1") || strFirst.Equals(""))
+                    {
+                        blnBandera = false;
+                    }
+                } while (blnBandera);
             }
         }
 
