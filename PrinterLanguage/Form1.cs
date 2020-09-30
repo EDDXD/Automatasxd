@@ -603,7 +603,7 @@ namespace PrinterLanguage
                     if (primeraCadena == "S" || primeraCadena == "S " || primeraCadena == "" || intCortadorCiclo >= 10)
                     {
                         bandera = false;
-                        if (intCortadorCiclo>= 10)
+                        if (intCortadorCiclo >= 10)
                         {
                             listaErrores.Add(x);
                         }
@@ -618,6 +618,47 @@ namespace PrinterLanguage
                     MessageBox.Show("Error de sintaxis en la línea: " + (item + 1), "¡ERROR!", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
+        }
+
+        Dictionary<string, int> misInstrComp = new Dictionary<string, int>();
+
+        public void EvaluarInstrCompuestas()
+        {
+            misInstrComp.Clear();
+            misInstrComp.Add("SI", 0);
+            misInstrComp.Add("FINSI", 0);
+            misInstrComp.Add("INICIO", 0);
+            misInstrComp.Add("FIN", 0);
+            misInstrComp.Add("EMPIEZA", 0);
+            misInstrComp.Add("FINEMPIEZA", 0);
+            foreach (string item in rtxtCodigo.Lines)
+            {
+                foreach (string palabra in item.Split(' '))
+                {
+                    if (misInstrComp.ContainsKey(palabra))
+                    {
+                        misInstrComp[palabra]++;
+                    }
+                }
+            }
+
+            if (misInstrComp["SI"] != misInstrComp["FINSI"])
+                if (misInstrComp["SI"] > misInstrComp["FINSI"])
+                    MessageBox.Show("Se esperaban " + (misInstrComp["SI"] - misInstrComp["FINSI"]) + " instrucciones de cierre <FINSI> para instrucciones <SI>", "Se ha detectado un error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                else
+                    MessageBox.Show("Se esperaban " + (misInstrComp["FINSI"] - misInstrComp["SI"]) + " instrucciones de apertura <SI> para instrucciones <FINSI>", "Se ha detectado un error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+            if (misInstrComp["INICIO"] != misInstrComp["FIN"])
+                if (misInstrComp["INICIO"] > misInstrComp["FIN"])
+                    MessageBox.Show("Se esperaba una instrucción de cierre <FIN> para la instrucción <INICIO>", "Se ha detectado un error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                else
+                    MessageBox.Show("Se esperaba una instrucción de apertura <INICIO> para la instrucción <FIN>", "Se ha detectado un error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+            if (misInstrComp["EMPIEZA"] != misInstrComp["FINEMPIEZA"])
+                if (misInstrComp["EMPIEZA"] > misInstrComp["FINEMPIEZA"])
+                    MessageBox.Show("Se esperaban " + (misInstrComp["EMPIEZA"] - misInstrComp["FINEMPIEZA"]) + " instrucciones de cierre <FINEMPIEZA> para instrucciones <EMPIEZA>", "Se ha detectado un error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                else
+                    MessageBox.Show("Se esperaban " + (misInstrComp["FINEMPIEZA"] - misInstrComp["EMPIEZA"]) + " instrucciones de apertura <EMPIEZA> para instrucciones <FINEMPIEZA>", "Se ha detectado un error", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
 
         private void btnSemantica_Click(object sender, EventArgs e)
@@ -671,9 +712,11 @@ namespace PrinterLanguage
             {
                 foreach (int item in listaErrores)
                 {
-                    MessageBox.Show("Error de semántica en la línea: "+(item+1), "¡ERROR!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show("Error de semántica en la línea: " + (item + 1), "¡ERROR!", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
+            EvaluarInstrCompuestas();
+
         }
 
         private void rtxttokens_TextChanged(object sender, EventArgs e)
