@@ -51,7 +51,7 @@
             this.rtxtGramatica = new System.Windows.Forms.RichTextBox();
             this.rtxttokens = new System.Windows.Forms.RichTextBox();
             this.rtxTipos = new System.Windows.Forms.RichTextBox();
-            this.richTextBox2 = new System.Windows.Forms.RichTextBox();
+            this.rtxtSemantica = new System.Windows.Forms.RichTextBox();
             this.btnSemantica = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
@@ -315,18 +315,18 @@
             this.rtxTipos.TabIndex = 6;
             this.rtxTipos.Text = "";
             // 
-            // richTextBox2
+            // rtxtSemantica
             // 
-            this.richTextBox2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(36)))), ((int)(((byte)(36)))), ((int)(((byte)(36)))));
-            this.richTextBox2.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.richTextBox2.Font = new System.Drawing.Font("Consolas", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.richTextBox2.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(192)))), ((int)(((byte)(192)))));
-            this.richTextBox2.Location = new System.Drawing.Point(1218, 438);
-            this.richTextBox2.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
-            this.richTextBox2.Name = "richTextBox2";
-            this.richTextBox2.Size = new System.Drawing.Size(498, 484);
-            this.richTextBox2.TabIndex = 7;
-            this.richTextBox2.Text = "";
+            this.rtxtSemantica.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(36)))), ((int)(((byte)(36)))), ((int)(((byte)(36)))));
+            this.rtxtSemantica.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.rtxtSemantica.Font = new System.Drawing.Font("Consolas", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.rtxtSemantica.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(192)))), ((int)(((byte)(192)))));
+            this.rtxtSemantica.Location = new System.Drawing.Point(1218, 438);
+            this.rtxtSemantica.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.rtxtSemantica.Name = "rtxtSemantica";
+            this.rtxtSemantica.Size = new System.Drawing.Size(498, 484);
+            this.rtxtSemantica.TabIndex = 7;
+            this.rtxtSemantica.Text = "";
             // 
             // btnSemantica
             // 
@@ -339,6 +339,7 @@
             this.btnSemantica.TabIndex = 8;
             this.btnSemantica.Text = "Semántica";
             this.btnSemantica.UseVisualStyleBackColor = false;
+            this.btnSemantica.Click += new System.EventHandler(this.btnSemantica_Click);
             // 
             // label1
             // 
@@ -403,7 +404,7 @@
             this.Controls.Add(this.label1);
             this.Controls.Add(this.btnSemantica);
             this.Controls.Add(this.rtxTipos);
-            this.Controls.Add(this.richTextBox2);
+            this.Controls.Add(this.rtxtSemantica);
             this.Controls.Add(this.rtxttokens);
             this.Controls.Add(this.btnGramatica);
             this.Controls.Add(this.lblConstantesNumericas);
@@ -454,7 +455,7 @@
         private System.Windows.Forms.RichTextBox rtxtGramatica;
         private System.Windows.Forms.RichTextBox rtxttokens;
         private System.Windows.Forms.RichTextBox rtxTipos;
-        private System.Windows.Forms.RichTextBox richTextBox2;
+        private System.Windows.Forms.RichTextBox rtxtSemantica;
         private System.Windows.Forms.Button btnSemantica;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;

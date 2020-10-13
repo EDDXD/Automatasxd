@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using MySql.Data.MySqlClient;
 using System.IO;
-
+using System.Text.RegularExpressions;
 
 namespace PrinterLanguage
 {
@@ -66,11 +66,11 @@ namespace PrinterLanguage
                 {
                     if ((palabra.Contains('#') && linea.Split(' ').Length - 1 >= intNumeroPalabraActual + 3) || palabra.Equals("CAPTURAR"))
                     {
+                        string strPalabraSiguiente = linea.Split(' ')[intNumeroPalabraActual + 2];
+                        string strContenido = strPalabraSiguiente;
+                        int intContadorAux = intNumeroPalabraActual + 2;
                         if (linea.Split(' ')[intNumeroPalabraActual + 1].Equals("=") || palabra.Equals("CAPTURAR"))
                         {
-                            string strPalabraSiguiente = linea.Split(' ')[intNumeroPalabraActual + 2];
-                            string strContenido = strPalabraSiguiente;
-                            int intContadorAux = intNumeroPalabraActual + 2;
 
                             if (palabra.Equals("CAPTURAR"))
                             {
@@ -124,6 +124,22 @@ namespace PrinterLanguage
                             }
                             else if (palabra != "CAPTURAR")
                             {
+                                string strPalabraSiguienteSiguiente = linea.Split(' ')[intNumeroPalabraActual + 3];
+                                Regex regexp = new Regex(@"^\d+|/+|/-|/*|//|^|#\w+$");
+
+                                if (strPalabraSiguienteSiguiente.Contains("+") || strPalabraSiguienteSiguiente.Contains("-") ||
+                                    strPalabraSiguienteSiguiente.Contains("-") || strPalabraSiguienteSiguiente.Contains("*") ||
+                                    strPalabraSiguienteSiguiente.Contains("^"))
+                                {
+                                    while (regexp.IsMatch(strPalabraSiguienteSiguiente) && strPalabraSiguienteSiguiente != "")
+                                    {
+                                        intContadorAux++;
+                                        strContenido += " " + strPalabraSiguienteSiguiente;
+                                        strPalabraSiguienteSiguiente = linea.Split(' ')[intContadorAux + 1];
+                                    }
+                                }
+
+
                                 if (blnRepetido)
                                 {
                                     misIden[intRepetido].Contenido = strContenido;
@@ -141,12 +157,11 @@ namespace PrinterLanguage
                                 if (blnRepetido)
                                 {
                                     misIden[intRepetido].Contenido = strContenido;
-                                    misIden[intRepetido].Tipo = (strContenido.Contains("[")) ? "Cadena" : "Entero";
                                     intRepetido = 0;
                                 }
                                 else
                                 {
-                                    misIden.Add(new Identificador("IDE" + intContarIdens, strPalabraSiguiente, "No definido", "null"));
+                                    misIden.Add(new Identificador("IDE" + intContarIdens, strPalabraSiguiente, "Cadena", "null"));
                                     intContarIdens++;
                                 }
                                 blnRepetido = false;
@@ -263,7 +278,7 @@ namespace PrinterLanguage
                                 aux2 = aux2 + token + " ";
                             }
 
-                            txtCadenaDeTokens.Text = txtCadenaDeTokens.Text + (token.Equals("IDE")?token+="N":(token.Equals("CNU")?token+="E":token)) + " ";
+                            txtCadenaDeTokens.Text = txtCadenaDeTokens.Text + (token.Equals("IDE") ? token += "N" : (token.Equals("CNU") ? token += "E" : token)) + " ";
                             apuntador = "0";
                             subcadena = "";
                         }
@@ -310,7 +325,7 @@ namespace PrinterLanguage
                     {
                         if (i.Token.Equals(s))
                         {
-                            strAux += i.Tipo.ToLower()+" ";
+                            strAux += i.Tipo.ToLower() + " ";
                         }
                     }
                 }
@@ -320,7 +335,7 @@ namespace PrinterLanguage
                 }
                 else
                 {
-                    strAux += s+" ";
+                    strAux += s + " ";
                 }
             }
             intLineaCodigoIntermedio++;
@@ -370,7 +385,7 @@ namespace PrinterLanguage
             if (int.Parse(qryActualizarTablas.ExecuteScalar().ToString()) > 0)
             {
                 qryActualizarTablas = new MySqlCommand("UPDATE Identificador SET CONTENIDO = '" + miIden.Contenido + "', " +
-                                                        "TIPO = '" + (miIden.Contenido.Contains("[") ? "Cadena" : "Entero") + "' " +
+                                                        "TIPO = '" + (miIden.Tipo) + "' " +
                                                         "WHERE NOMBRE = '" + miIden.Nombre + "'", con);
                 qryActualizarTablas.ExecuteNonQuery();
                 if (!miIden.Contenido.Contains("["))
@@ -550,12 +565,17 @@ namespace PrinterLanguage
 
             string primeraCadena = "";
             string segundaCadena = "";
+            bool bandera = true;
+
+            List<int> listaErrores = new List<int>();
+            int intCortadorCiclo = 0;
 
             for (int x = 0; x < rtxtCodigoIntermedio.Lines.Count(); x++)
             {
+                intCortadorCiclo = 0;
                 primeraCadena = rtxtCodigoIntermedio.Lines[x];
                 segundaCadena = rtxtCodigoIntermedio.Lines[x];
-                bool bandera = true;
+                bandera = true;
 
                 do
                 {
@@ -573,28 +593,130 @@ namespace PrinterLanguage
                                 MessageBox.Show("Cadena Principal: " + primeraCadena + "\nSe cambio: " + myDtRd.GetString(1) + "\nPor: " + myDtRd.GetString(0));
                                 segundaCadena = primeraCadena.Replace(myDtRd.GetString(1), myDtRd.GetString(0));
                                 primeraCadena = segundaCadena;
-                                //MessageBox.Show(primeraCadena + "\n" + segundaCadena);
                                 rtxtGramatica.Text += segundaCadena + "\n";
                                 break;
-                            }
-                            else
-                            {
-                                //MessageBox.Show("no hubo cambios");
                             }
                         }
                     }
                     mySQLCon.Close();
-
-                    if (primeraCadena == "S" || primeraCadena == "S ")
+                    intCortadorCiclo++;
+                    if (primeraCadena == "S" || primeraCadena == "S " || primeraCadena == "" || intCortadorCiclo >= 10)
                     {
                         bandera = false;
-                        //rtxtGramatica.Text += primeraCadena + "\n";
-                        //MessageBox.Show("ya hay una S, el recorrido termino");
+                        if (intCortadorCiclo >= 10)
+                        {
+                            listaErrores.Add(x);
+                        }
                     }
 
                 } while (bandera);
-                //MessageBox.Show("ya salio del dowhile");
             }
+            if (listaErrores != null)
+            {
+                foreach (int item in listaErrores)
+                {
+                    MessageBox.Show("Error de sintaxis en la línea: " + (item + 1), "¡ERROR!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+        }
+
+        Dictionary<string, int> misInstrComp = new Dictionary<string, int>();
+
+        public void EvaluarInstrCompuestas()
+        {
+            misInstrComp.Clear();
+            misInstrComp.Add("SI", 0);
+            misInstrComp.Add("FINSI", 0);
+            misInstrComp.Add("INICIO", 0);
+            misInstrComp.Add("FIN", 0);
+            misInstrComp.Add("EMPIEZA", 0);
+            misInstrComp.Add("FINEMPIEZA", 0);
+            foreach (string item in rtxtCodigo.Lines)
+            {
+                foreach (string palabra in item.Split(' '))
+                {
+                    if (misInstrComp.ContainsKey(palabra))
+                    {
+                        misInstrComp[palabra]++;
+                    }
+                }
+            }
+
+            if (misInstrComp["SI"] != misInstrComp["FINSI"])
+                if (misInstrComp["SI"] > misInstrComp["FINSI"])
+                    MessageBox.Show("Se esperaban " + (misInstrComp["SI"] - misInstrComp["FINSI"]) + " instrucciones de cierre <FINSI> para instrucciones <SI>", "Se ha detectado un error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                else
+                    MessageBox.Show("Se esperaban " + (misInstrComp["FINSI"] - misInstrComp["SI"]) + " instrucciones de apertura <SI> para instrucciones <FINSI>", "Se ha detectado un error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+            if (misInstrComp["INICIO"] != misInstrComp["FIN"])
+                if (misInstrComp["INICIO"] > misInstrComp["FIN"])
+                    MessageBox.Show("Se esperaba una instrucción de cierre <FIN> para la instrucción <INICIO>", "Se ha detectado un error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                else
+                    MessageBox.Show("Se esperaba una instrucción de apertura <INICIO> para la instrucción <FIN>", "Se ha detectado un error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+            if (misInstrComp["EMPIEZA"] != misInstrComp["FINEMPIEZA"])
+                if (misInstrComp["EMPIEZA"] > misInstrComp["FINEMPIEZA"])
+                    MessageBox.Show("Se esperaban " + (misInstrComp["EMPIEZA"] - misInstrComp["FINEMPIEZA"]) + " instrucciones de cierre <FINEMPIEZA> para instrucciones <EMPIEZA>", "Se ha detectado un error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                else
+                    MessageBox.Show("Se esperaban " + (misInstrComp["FINEMPIEZA"] - misInstrComp["EMPIEZA"]) + " instrucciones de apertura <EMPIEZA> para instrucciones <FINEMPIEZA>", "Se ha detectado un error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+
+        private void btnSemantica_Click(object sender, EventArgs e)
+        {
+            rtxtSemantica.Text = "";
+            MySqlConnection conect = new MySqlConnection(cadenaConexiong);
+            string strFirst = "", strSecond = "";
+            bool blnBandera = true;
+
+            List<int> listaErrores = new List<int>();
+            int intCortadorCiclo = 0;
+
+            for (int i = 0; i < rtxTipos.Lines.Count(); i++)
+            {
+                intCortadorCiclo = 0;
+                strFirst = rtxTipos.Lines[i];
+                strSecond = rtxTipos.Lines[i];
+                blnBandera = true;
+                MySqlDataReader myDtRd1;
+                MySqlCommand myQuery = new MySqlCommand("SELECT PRODUCTO, INSTRUCCION, LENGTH(INSTRUCCION) FROM SG ORDER BY LENGTH(INSTRUCCION) DESC", conect);
+                do
+                {
+                    conect.Open();
+                    myDtRd1 = myQuery.ExecuteReader();
+                    while (myDtRd1.Read())
+                    {
+                        if (strFirst.Length >= myDtRd1.GetInt32(2))
+                        {
+                            if (strFirst.Replace(myDtRd1.GetString(1), myDtRd1.GetString(0)) != strSecond)
+                            {
+                                MessageBox.Show("Cadena Principal: " + strFirst + "\nSe cambio: " + myDtRd1.GetString(1) + "\nPor: " + myDtRd1.GetString(0));
+                                strSecond = strFirst.Replace(myDtRd1.GetString(1), myDtRd1.GetString(0));
+                                strFirst = strSecond;
+                                rtxtSemantica.Text += strSecond + "\n";
+                            }
+                        }
+                    }
+                    conect.Close();
+                    intCortadorCiclo++;
+                    if (strFirst.Contains("S ") || strFirst.Equals("") || intCortadorCiclo >= 10)
+                    {
+                        blnBandera = false;
+                        if (intCortadorCiclo >= 10)
+                        {
+                            listaErrores.Add(i);
+                        }
+                    }
+                } while (blnBandera);
+            }
+            if (listaErrores != null)
+            {
+                foreach (int item in listaErrores)
+                {
+                    MessageBox.Show("Error de semántica en la línea: " + (item + 1), "¡ERROR!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+            EvaluarInstrCompuestas();
+
         }
 
         private void rtxttokens_TextChanged(object sender, EventArgs e)
