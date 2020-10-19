@@ -127,3 +127,8 @@ C:\Users\maroh\OneDrive\Documents\7 A 2020\Lenguajes y Autómatas 2\P1\PrinterLa
 C:\Users\maroh\OneDrive\Documents\7 A 2020\Lenguajes y Autómatas 2\P1\PrinterLanguage\Automatasxd\PrinterLanguage\bin\Debug\System.Runtime.CompilerServices.Unsafe.dll
 C:\Users\maroh\OneDrive\Documents\7 A 2020\Lenguajes y Autómatas 2\P1\PrinterLanguage\Automatasxd\PrinterLanguage\bin\Debug\System.Numerics.Vectors.dll
 C:\Users\maroh\OneDrive\Documents\7 A 2020\Lenguajes y Autómatas 2\P1\PrinterLanguage\Automatasxd\PrinterLanguage\obj\Debug\PrinterLanguage.exe.config
+E:\edd-g\Documents\AUTOMATAS II\Automatasxd\PrinterLanguage\bin\Debug\System.Memory.dll
+E:\edd-g\Documents\AUTOMATAS II\Automatasxd\PrinterLanguage\bin\Debug\System.Numerics.Vectors.dll
+E:\edd-g\Documents\AUTOMATAS II\Automatasxd\PrinterLanguage\obj\Debug\PrinterLanguage.exe.config
+E:\edd-g\Documents\AUTOMATAS II\Automatasxd\PrinterLanguage\bin\Debug\Transitions.dll
+E:\edd-g\Documents\AUTOMATAS II\Automatasxd\PrinterLanguage\bin\Debug\Transitions.pdb
