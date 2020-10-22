@@ -116,14 +116,8 @@ E:\edd-g\Documents\AUTOMATAS II\Automatasxd\PrinterLanguage\obj\Debug\PrinterLan
 E:\edd-g\Documents\AUTOMATAS II\Automatasxd\PrinterLanguage\obj\Debug\PrinterLanguage.csproj.CopyComplete
 E:\edd-g\Documents\AUTOMATAS II\Automatasxd\PrinterLanguage\obj\Debug\PrinterLanguage.exe
 E:\edd-g\Documents\AUTOMATAS II\Automatasxd\PrinterLanguage\obj\Debug\PrinterLanguage.pdb
-C:\Users\maroh\OneDrive\Documents\7 A 2020\Lenguajes y Autómatas 2\P1\PrinterLanguage\Automatasxd\PrinterLanguage\bin\Debug\Zstandard.Net.dll
-C:\Users\maroh\OneDrive\Documents\7 A 2020\Lenguajes y Autómatas 2\P1\PrinterLanguage\Automatasxd\PrinterLanguage\bin\Debug\K4os.Compression.LZ4.Streams.dll
-C:\Users\maroh\OneDrive\Documents\7 A 2020\Lenguajes y Autómatas 2\P1\PrinterLanguage\Automatasxd\PrinterLanguage\bin\Debug\Ubiety.Dns.Core.dll
-C:\Users\maroh\OneDrive\Documents\7 A 2020\Lenguajes y Autómatas 2\P1\PrinterLanguage\Automatasxd\PrinterLanguage\bin\Debug\Renci.SshNet.dll
-C:\Users\maroh\OneDrive\Documents\7 A 2020\Lenguajes y Autómatas 2\P1\PrinterLanguage\Automatasxd\PrinterLanguage\bin\Debug\System.Buffers.dll
-C:\Users\maroh\OneDrive\Documents\7 A 2020\Lenguajes y Autómatas 2\P1\PrinterLanguage\Automatasxd\PrinterLanguage\bin\Debug\K4os.Compression.LZ4.dll
-C:\Users\maroh\OneDrive\Documents\7 A 2020\Lenguajes y Autómatas 2\P1\PrinterLanguage\Automatasxd\PrinterLanguage\bin\Debug\K4os.Hash.xxHash.dll
-C:\Users\maroh\OneDrive\Documents\7 A 2020\Lenguajes y Autómatas 2\P1\PrinterLanguage\Automatasxd\PrinterLanguage\bin\Debug\System.Memory.dll
-C:\Users\maroh\OneDrive\Documents\7 A 2020\Lenguajes y Autómatas 2\P1\PrinterLanguage\Automatasxd\PrinterLanguage\bin\Debug\System.Runtime.CompilerServices.Unsafe.dll
-C:\Users\maroh\OneDrive\Documents\7 A 2020\Lenguajes y Autómatas 2\P1\PrinterLanguage\Automatasxd\PrinterLanguage\bin\Debug\System.Numerics.Vectors.dll
-C:\Users\maroh\OneDrive\Documents\7 A 2020\Lenguajes y Autómatas 2\P1\PrinterLanguage\Automatasxd\PrinterLanguage\obj\Debug\PrinterLanguage.exe.config
+C:\Users\maroh\OneDrive\Documents\7 A 2020\Lenguajes y Autómatas 2\P1\PrinterLanguage\Automatasxd\PrinterLanguage\bin\Debug\Interop.WMPLib.dll
+C:\Users\maroh\OneDrive\Documents\7 A 2020\Lenguajes y Autómatas 2\P1\PrinterLanguage\Automatasxd\PrinterLanguage\bin\Debug\AxInterop.WMPLib.dll
+C:\Users\maroh\OneDrive\Documents\7 A 2020\Lenguajes y Autómatas 2\P1\PrinterLanguage\Automatasxd\PrinterLanguage\obj\Debug\Interop.WMPLib.dll
+C:\Users\maroh\OneDrive\Documents\7 A 2020\Lenguajes y Autómatas 2\P1\PrinterLanguage\Automatasxd\PrinterLanguage\obj\Debug\AxInterop.WMPLib.dll
+C:\Users\maroh\OneDrive\Documents\7 A 2020\Lenguajes y Autómatas 2\P1\PrinterLanguage\Automatasxd\PrinterLanguage\obj\Debug\PrinterLanguage.csproj.ResolveComReference.cache

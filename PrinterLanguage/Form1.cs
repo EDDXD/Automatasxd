@@ -73,14 +73,13 @@ namespace PrinterLanguage
                             blnSI = true;
                         }
                     }
-                    if ((palabra.Contains('#') && linea.Split(' ').Length - 1 >= intNumeroPalabraActual + 3 && !blnSI) || palabra.Equals("CAPTURAR"))
+                    if ((palabra.Contains('#') && linea.Split(' ').Length - 1 >= intNumeroPalabraActual + 3 && !blnSI && !palabra.Contains("HASTA")) || palabra.Equals("CAPTURAR"))
                     {
                         string strPalabraSiguiente = linea.Split(' ')[intNumeroPalabraActual + 2];
                         string strContenido = strPalabraSiguiente;
                         int intContadorAux = intNumeroPalabraActual + 2;
-                        if (linea.Split(' ')[intNumeroPalabraActual + 1].Equals("=") || palabra.Equals("CAPTURAR"))
+                        if (linea.Split(' ')[intNumeroPalabraActual + 1].Equals("=") && ((intNumeroPalabraActual > 0) ? !linea.Split(' ')[intNumeroPalabraActual - 1].Equals("HASTA") : true) || palabra.Equals("CAPTURAR"))
                         {
-
                             if (palabra.Equals("CAPTURAR"))
                             {
                                 strPalabraSiguiente = linea.Split(' ')[intNumeroPalabraActual + 1];
@@ -118,16 +117,16 @@ namespace PrinterLanguage
                                     strContenido += " " + strPalabraSiguiente;
                                     intContadorAux++;
                                     strPalabraSiguiente = linea.Split(' ')[intContadorAux];
-                                } while (strPalabraSiguiente != "]");
+                                } while (strPalabraSiguiente != "");
 
                                 if (blnRepetido)
                                 {
-                                    misIden[intRepetido].Contenido = strContenido + " ]";
+                                    misIden[intRepetido].Contenido = strContenido;
                                     intRepetido = 0;
                                 }
                                 else
                                 {
-                                    misIden.Add(new Identificador("IDE" + (intContarIdens + 1), palabra, "Cadena", strContenido + " ]"));
+                                    misIden.Add(new Identificador("IDE" + (intContarIdens + 1), palabra, "Cadena", strContenido));
                                     intContarIdens++;
                                 }
                                 blnRepetido = false;
@@ -184,6 +183,7 @@ namespace PrinterLanguage
 
         private void btnEjecutar_Click(object sender, EventArgs e)
         {
+            dgvTripleta.Rows.Clear();
             rtxInfijo.Text = "";
             rtxPostfijo.Text = "";
             rtxtGramatica.Clear();
@@ -250,15 +250,23 @@ namespace PrinterLanguage
                                     }
                                     intIdAux++;
                                 }
-                                if (blnRepetido)
+                                try
                                 {
-                                    ideTemporal = new Identificador(misIden.ElementAt(intIdAux).Token, misIden.ElementAt(intIdAux).Nombre,
-                                                                    misIden.ElementAt(intIdAux).Tipo, misIden.ElementAt(intIdAux).Contenido);
+                                    if (blnRepetido)
+                                    {
+                                        ideTemporal = new Identificador(misIden.ElementAt(intIdAux).Token, misIden.ElementAt(intIdAux).Nombre,
+                                                                        misIden.ElementAt(intIdAux).Tipo, misIden.ElementAt(intIdAux).Contenido);
+                                    }
+                                    else
+                                    {
+                                        ideTemporal = new Identificador(misIden.ElementAt(intIdenActual).Token, misIden.ElementAt(intIdenActual).Nombre,
+                                                                        misIden.ElementAt(intIdenActual).Tipo, misIden.ElementAt(intIdenActual).Contenido);
+                                    }
                                 }
-                                else
+                                catch (Exception)
                                 {
-                                    ideTemporal = new Identificador(misIden.ElementAt(intIdenActual).Token, misIden.ElementAt(intIdenActual).Nombre,
-                                                                    misIden.ElementAt(intIdenActual).Tipo, misIden.ElementAt(intIdenActual).Contenido);
+                                    MessageBox.Show("Variable no declarada.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                    return;
                                 }
 
                                 actualizarTablaSimbolos(ideTemporal);
@@ -305,6 +313,7 @@ namespace PrinterLanguage
             txtNumRenglon.Clear();
             MessageBox.Show("¡Cadena totalmente evaluada con éxito!", "", MessageBoxButtons.OK, MessageBoxIcon.Information);
             updateCN(new MySqlConnection(cadenaConexion));
+            LlenarListaCadenas();
             mostrarDatosEnTablas();
             AjustarInfijoPostfijo();
         }
@@ -392,20 +401,29 @@ namespace PrinterLanguage
             }
             else
             {
-                if (miIden.Tipo.Equals("Entero"))
+                try
                 {
-                    updateCN(con);
+                    if (miIden.Tipo.Equals("Entero"))
+                    {
+                        updateCN(con);
+                    }
+                    qryActualizarTablas = new MySqlCommand("INSERT INTO Identificador (TOKEN, NOMBRE, TIPO, CONTENIDO) VALUES ( '" + miIden.Token + "', '" + miIden.Nombre + "', '" + miIden.Tipo + "', '" + miIden.Contenido + "' )", con);
+                    qryActualizarTablas.ExecuteNonQuery();
                 }
-                qryActualizarTablas = new MySqlCommand("INSERT INTO Identificador (TOKEN, NOMBRE, TIPO, CONTENIDO) VALUES ( '" + miIden.Token + "', '" + miIden.Nombre + "', '" + miIden.Tipo + "', '" + miIden.Contenido + "' )", con);
-                qryActualizarTablas.ExecuteNonQuery();
+                catch (Exception)
+                {
+                    MessageBox.Show("Variable no declarada.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+
             }
 
             con.Close();
             mostrarDatosEnTablas();
         }
-
+        Dictionary<string, int> listaConstantesNumerica = new Dictionary<string, int>();
         public void updateCN(MySqlConnection connection)
         {
+            listaConstantesNumerica = new Dictionary<string, int>();
             MySqlCommand qry = new MySqlCommand("DELETE FROM ConstanteNumerica", connection);
             if (!connection.State.ToString().Equals("Open"))
             {
@@ -427,9 +445,54 @@ namespace PrinterLanguage
                         {
                             qry = new MySqlCommand("INSERT INTO ConstanteNumerica (TOKEN, CONTENIDO) VALUES ( 'CNU" + aux + "', '" + palabra + "' )", connection);
                             listaConstantes.Add(palabra);
+                            listaConstantesNumerica.Add("CNU" + aux, int.Parse(palabra));
                             aux++;
                             qry.ExecuteNonQuery();
                         }
+                    }
+                }
+            }
+        }
+
+        Dictionary<string, string> listaCadenas = new Dictionary<string, string>();
+
+        public void LlenarListaCadenas()
+        {
+            MySqlConnection con = new MySqlConnection(cadenaConexion);
+            MySqlCommand qry = new MySqlCommand("DELETE FROM Cadena", con);
+            if (!con.State.ToString().Equals("Open"))
+            {
+                con.Open();
+            }
+            qry.ExecuteNonQuery();
+            string strCadena = "";
+            int intNumCadena = 1;
+            listaCadenas = new Dictionary<string, string>();
+            for (int i = 0; i < rtxtCodigo.Lines.Count(); i++)
+            {
+                for (int j = 0; j < rtxtCodigo.Lines[i].Split(' ').Count(); j++)
+                {
+                    if (rtxtCodigo.Lines[i].Split(' ')[j].Contains("["))
+                    {
+                        strCadena = "";
+                        for (int k = j; k < rtxtCodigo.Lines[i].Split(' ').Count(); k++)
+                        {
+                            if (!rtxtCodigo.Lines[i].Split(' ')[k].Contains(" "))
+                            {
+                                if (k >= rtxtCodigo.Lines[i].Split(' ').Count() - 2)
+                                {
+                                    strCadena += rtxtCodigo.Lines[i].Split(' ')[k];
+                                }
+                                else
+                                {
+                                    strCadena += rtxtCodigo.Lines[i].Split(' ')[k] + " ";
+                                }
+                            }
+                        }
+                        listaCadenas.Add("CADE" + intNumCadena, strCadena);
+                        qry = new MySqlCommand("INSERT INTO Cadena (TOKEN, CONTENIDO) VALUES ( 'CADE" + intNumCadena + "', '" + strCadena + "' )", con);
+                        qry.ExecuteNonQuery();
+                        intNumCadena++;
                     }
                 }
             }
@@ -514,6 +577,13 @@ namespace PrinterLanguage
             myDtAd2.Fill(myDtTb2);
             dgvConstantesNumericas.DataSource = myDtTb2;
             mySQLCon.Close();
+
+            mySQLCon.Open();
+            MySqlDataAdapter myDtAd3 = new MySqlDataAdapter("SELECT * FROM Cadena", mySQLCon);
+            DataTable myDtTb3 = new DataTable();
+            myDtAd3.Fill(myDtTb3);
+            dgvCadenas.DataSource = myDtTb3;
+            mySQLCon.Close();
         }
 
         public void borrarDatosEnTablas()
@@ -542,19 +612,38 @@ namespace PrinterLanguage
             }
             mySQLCon.Close();
 
+            mySQLCon.Open();
+            MySqlDataReader myDtRd3;
+            MySqlCommand myQuery3 = new MySqlCommand("SELECT COUNT(*) FROM Cadena", mySQLCon);
+            myDtRd3 = myQuery3.ExecuteReader();
+            int cade = 0;
+            while (myDtRd3.Read())
+            {
+                cade = myDtRd3.GetInt32(0);
+            }
+            mySQLCon.Close();
+
             if (id > 0)
             {
                 mySQLCon.Open();
-                MySqlCommand myQuery3 = new MySqlCommand("TRUNCATE Identificador", mySQLCon);
-                myQuery3.ExecuteNonQuery();
+                MySqlCommand myQuery4 = new MySqlCommand("TRUNCATE Identificador", mySQLCon);
+                myQuery4.ExecuteNonQuery();
                 mySQLCon.Close();
             }
 
             if (cn > 0)
             {
                 mySQLCon.Open();
-                MySqlCommand myQuery4 = new MySqlCommand("TRUNCATE ConstanteNumerica", mySQLCon);
-                myQuery4.ExecuteNonQuery();
+                MySqlCommand myQuery5 = new MySqlCommand("TRUNCATE ConstanteNumerica", mySQLCon);
+                myQuery5.ExecuteNonQuery();
+                mySQLCon.Close();
+            }
+
+            if (cade > 0)
+            {
+                mySQLCon.Open();
+                MySqlCommand myQuery6 = new MySqlCommand("TRUNCATE Cadena", mySQLCon);
+                myQuery6.ExecuteNonQuery();
                 mySQLCon.Close();
             }
             mostrarDatosEnTablas();
@@ -644,31 +733,38 @@ namespace PrinterLanguage
             }
 
             if (misInstrComp["SI"] != misInstrComp["FINSI"])
+            {
+                blnError = true;
                 if (misInstrComp["SI"] > misInstrComp["FINSI"])
                     MessageBox.Show("Se esperaban " + (misInstrComp["SI"] - misInstrComp["FINSI"]) + " instrucciones de cierre <FINSI> para instrucciones <SI>", "Se ha detectado un error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 else
                     MessageBox.Show("Se esperaban " + (misInstrComp["FINSI"] - misInstrComp["SI"]) + " instrucciones de apertura <SI> para instrucciones <FINSI>", "Se ha detectado un error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
 
             if (misInstrComp["INICIO"] != misInstrComp["FIN"])
+            {
+                blnError = true;
                 if (misInstrComp["INICIO"] > misInstrComp["FIN"])
                     MessageBox.Show("Se esperaba una instrucción de cierre <FIN> para la instrucción <INICIO>", "Se ha detectado un error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 else
                     MessageBox.Show("Se esperaba una instrucción de apertura <INICIO> para la instrucción <FIN>", "Se ha detectado un error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
 
             if (misInstrComp["EMPIEZA"] != misInstrComp["FINEMPIEZA"])
+            {
+                blnError = true;
                 if (misInstrComp["EMPIEZA"] > misInstrComp["FINEMPIEZA"])
                     MessageBox.Show("Se esperaban " + (misInstrComp["EMPIEZA"] - misInstrComp["FINEMPIEZA"]) + " instrucciones de cierre <FINEMPIEZA> para instrucciones <EMPIEZA>", "Se ha detectado un error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 else
                     MessageBox.Show("Se esperaban " + (misInstrComp["FINEMPIEZA"] - misInstrComp["EMPIEZA"]) + " instrucciones de apertura <EMPIEZA> para instrucciones <FINEMPIEZA>", "Se ha detectado un error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
-        private void button1_Click(object sender, EventArgs e)
-        {
-
-        }
-
+        bool blnError = false;
         private void btnSemantica_Click(object sender, EventArgs e)
         {
+            dgvTripleta.Rows.Clear();
+            blnError = false;
             rtxtSemantica.Text = "";
             MySqlConnection conect = new MySqlConnection(cadenaConexiong);
             string strFirst = "", strSecond = "";
@@ -707,7 +803,7 @@ namespace PrinterLanguage
                     if (strFirst.Contains("S ") || strFirst.Equals("") || intCortadorCiclo >= 10)
                     {
                         blnBandera = false;
-                        if (intCortadorCiclo >= 10)
+                        if (intCortadorCiclo >= 15)
                         {
                             listaErrores.Add(i);
                         }
@@ -719,9 +815,379 @@ namespace PrinterLanguage
                 foreach (int item in listaErrores)
                 {
                     MessageBox.Show("Error de semántica en la línea: " + (item + 1), "¡ERROR!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    blnError = true;
                 }
             }
             EvaluarInstrCompuestas();
+            if (!blnError)
+            {
+                RellenarTripleta();
+            }
+            else
+            {
+                MessageBox.Show("Existen errores semánticos por resolver.", "No se puede rellenar la tripleta", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        List<List<string>> listaOperaciones = new List<List<string>>();
+        List<string> listaActual = new List<string>();
+
+        public void RellenarTripleta()
+        {
+            listaOperaciones = new List<List<string>>();
+            listaActual = new List<string>();
+            string lineaActual = "";
+            string palabraActual = "";
+            string palabraActualOperacion = "";
+            for (int i = 0; i < rtxPostfijo.Lines.Count(); i++)
+            {
+                lineaActual = rtxPostfijo.Lines[i];
+                if (lineaActual.Contains("PR06") || lineaActual.Contains("OPA") || lineaActual.Contains("PR10") || lineaActual.Contains("PR05") || lineaActual.Contains("OPR5"))
+                {
+                    for (int j = 0; j < lineaActual.Split(' ').Count(); j++)
+                    {
+                        palabraActual = lineaActual.Split(' ')[j];
+                        if (palabraActual.Contains("PR06"))
+                        {
+                            listaActual.Add("--SI--");
+                            for (int k = j + 1; k < lineaActual.Split(' ').Count(); k++) //EMPIEZA UN TOKEN DESPUES DE PR06
+                            {
+                                palabraActualOperacion = lineaActual.Split(' ')[k];
+                                if (!palabraActualOperacion.Contains("PR07")) //SOLO SI NO HEMOS LLEGADO A PR07 SIGUE METIENDO A LA LISTA
+                                {
+                                    listaActual.Add(palabraActualOperacion);
+                                }
+                                else
+                                {
+                                    j = k;
+                                    break;
+                                }
+                            }
+                            //YA SE ACABO DE CONCATENAR LA COND DEL IF
+                            listaOperaciones.Add(listaActual);
+                            listaActual = new List<string>();
+                        }
+                        else if (palabraActual.Contains("PR10"))
+                        {
+                            listaActual.Add("--EMPIEZA--");
+                            for (int k = j + 1; k < lineaActual.Split(' ').Count(); k++) //EMPIEZA UN TOKEN DESPUES DE PR10
+                            {
+                                palabraActualOperacion = lineaActual.Split(' ')[k];
+                                if (!palabraActualOperacion.Contains("PR11")) //SOLO SI NO HEMOS LLEGADO A PR11 SIGUE METIENDO A LA LISTA
+                                {
+                                    listaActual.Add(palabraActualOperacion);
+                                }
+                                else
+                                {
+                                    j = k - 1;
+                                    break;
+                                }
+                            }
+                            //YA SE ACABO DE CONCATENAR LA INICIACION DEL CICLO EMPIEZA 
+                            listaOperaciones.Add(listaActual);
+                            listaActual = new List<string>();
+                        }
+                        else if (palabraActual.Contains("PR11"))
+                        {
+                            listaActual.Add("--HASTA--");
+                            for (int k = j + 1; k < lineaActual.Split(' ').Count(); k++) //EMPIEZA UN TOKEN DESPUES DE PR10
+                            {
+                                palabraActualOperacion = lineaActual.Split(' ')[k];
+                                if (!palabraActualOperacion.Equals("")) //SOLO SI NO HEMOS LLEGADO A UN ESPACIO VACIO SIGUE METIENDO A LA LISTA
+                                {
+                                    listaActual.Add(palabraActualOperacion);
+                                }
+                                else
+                                {
+                                    j = k - 1;
+                                    break;
+                                }
+                            }
+                            //YA SE ACABO DE CONCATENAR LA INICIACION DEL CICLO EMPIEZA 
+                            listaOperaciones.Add(listaActual);
+                            listaActual = new List<string>();
+                        }
+                        else if (palabraActual.Contains("OPR5"))
+                        {
+                            listaActual.Add("--ASIG--");
+                            for (int k = 0; k < lineaActual.Split(' ').Count(); k++) //EMPIEZA DESDE CERO
+                            {
+                                palabraActualOperacion = lineaActual.Split(' ')[k];
+                                if (!palabraActualOperacion.Equals(" ")) //SOLO SI NO HEMOS LLEGADO A UN ESPACIO VACIO SIGUE METIENDO A LA LISTA
+                                {
+                                    listaActual.Add(palabraActualOperacion);
+                                }
+                                else
+                                {
+                                    j = k - 1;
+                                    break;
+                                }
+                            }
+                            //YA SE ACABO DE CONCATENAR LA ASIGNACION
+                            listaOperaciones.Add(listaActual);
+                            listaActual = new List<string>();
+                        }
+                        else if (palabraActual.Contains("PR05") && lineaActual.Contains("CES8"))
+                        {
+                            listaActual.Add("--CONCAT--");
+                            for (int k = j + 1; k < lineaActual.Split(' ').Count(); k++) //EMPIEZA UN TOKEN DESPUÉS DE PR05
+                            {
+                                palabraActualOperacion = lineaActual.Split(' ')[k];
+                                if (!palabraActualOperacion.Equals("")) //SOLO SI NO HEMOS LLEGADO A UN ESPACIO VACIO SIGUE METIENDO A LA LISTA
+                                {
+                                    if (palabraActualOperacion != "CES8")
+                                    {
+                                        listaActual.Add(palabraActualOperacion);
+                                    }
+                                }
+                                else
+                                {
+                                    j = k - 1;
+                                    break;
+                                }
+                            }
+                            //YA SE ACABO DE CONCATENAR LA CADENA
+                            listaOperaciones.Add(listaActual);
+                            listaActual = new List<string>();
+                        }
+                    }
+                }
+            }
+            string strOperacion = "";
+            for (int i = 0; i < listaOperaciones.Count(); i++)
+            {
+                strOperacion = listaOperaciones[i][0];
+                //dgvTripleta.Rows.Add(listaOperaciones[i][i]);
+                if (strOperacion.Contains("ASIG"))
+                {
+                    SwitchEvalOP(listaOperaciones[i]);
+                }
+                else if (strOperacion.Contains("EMPIEZA"))
+                {
+
+                }
+                else if (strOperacion.Contains("HASTA"))
+                {
+
+                }
+                else if (strOperacion.Contains("SI"))
+                {
+                }
+                else if (strOperacion.Contains("CONCAT"))
+                {
+
+                }
+            }
+            foreach (Identificador identificador in misIden)
+            {
+                MessageBox.Show(identificador.Token + ", " + identificador.Nombre + ", " + identificador.Contenido);
+            }
+        }
+
+        public void SwitchEvalOP(List<string> lineaActual)
+        {
+            string strTokenActual = "";
+            string strTokenAnterior = "";
+            for (int i = 0; i < misIden.Count(); i++)
+            {
+                if (lineaActual[1].Contains(misIden[i].Token))
+                {
+                    for (int j = 2; j < lineaActual.Count(); j++)
+                    {
+                        strTokenActual = lineaActual[j].Replace(" ", "");
+                        strTokenAnterior = lineaActual[j - 1].Replace(" ", "");
+                        switch (strTokenActual)
+                        {
+                            case "OPA1":
+                                if (strTokenAnterior.Contains("IDE"))
+                                {
+                                    foreach (Identificador identificador in misIden)
+                                    {
+                                        if (strTokenAnterior.Contains(identificador.Token))
+                                        {
+                                            if (identificador.Tipo.Equals("Entero"))
+                                            {
+                                                misIden[i].Contenido = (int.Parse(misIden[i].Contenido.Split(' ')[0]) + int.Parse(identificador.Contenido)).ToString();
+                                            }
+                                            else
+                                            {
+                                                misIden[i].Contenido += identificador.Contenido;
+                                            }
+                                            dgvTripleta.Rows.Add(misIden[i].Token, identificador.Token, "OPA1");
+                                        }
+                                    }
+                                }
+                                else if (strTokenAnterior.Contains("CNU"))
+                                {
+                                    foreach (KeyValuePair<string, int> constnum in listaConstantesNumerica)
+                                    {
+                                        if (strTokenAnterior.Contains(constnum.Key))
+                                        {
+                                            misIden[i].Contenido = (int.Parse(misIden[i].Contenido.Split(' ')[0]) + constnum.Value).ToString();
+                                            dgvTripleta.Rows.Add(misIden[i].Token, constnum.Key, "OPA1");
+                                        }
+                                    }
+                                }
+                                else if (strTokenAnterior.Contains("CADE"))
+                                {
+                                    foreach (KeyValuePair<string, string> cadena in listaCadenas)
+                                    {
+                                        if (strTokenAnterior.Contains(cadena.Key))
+                                        {
+                                            misIden[i].Contenido += cadena.Value;
+                                            dgvTripleta.Rows.Add(misIden[i].Token, cadena.Key, "OPA1");
+                                        }
+                                    }
+                                }
+                                break;
+                            case "OPA2":
+                                if (strTokenAnterior.Contains("IDE"))
+                                {
+                                    foreach (Identificador identificador in misIden)
+                                    {
+                                        if (strTokenAnterior.Contains(identificador.Token))
+                                        {
+                                            if (identificador.Tipo.Equals("Entero"))
+                                            {
+                                                misIden[i].Contenido = (int.Parse(misIden[i].Contenido.Split(' ')[0]) - int.Parse(identificador.Contenido)).ToString();
+                                                dgvTripleta.Rows.Add(misIden[i].Token, identificador.Token, "OPA2");
+                                            }
+                                        }
+                                    }
+                                }
+                                else if (strTokenAnterior.Contains("CNU"))
+                                {
+                                    foreach (KeyValuePair<string, int> constnum in listaConstantesNumerica)
+                                    {
+                                        if (strTokenAnterior.Contains(constnum.Key))
+                                        {
+                                            misIden[i].Contenido = (int.Parse(misIden[i].Contenido.Split(' ')[0]) - constnum.Value).ToString();
+                                            dgvTripleta.Rows.Add(misIden[i].Token, constnum.Key, "OPA2");
+                                        }
+                                    }
+                                }
+                                break;
+                            case "OPA3":
+                                if (strTokenAnterior.Contains("IDE"))
+                                {
+                                    foreach (Identificador identificador in misIden)
+                                    {
+                                        if (strTokenAnterior.Contains(identificador.Token))
+                                        {
+                                            if (identificador.Tipo.Equals("Entero"))
+                                            {
+                                                misIden[i].Contenido = (int.Parse(misIden[i].Contenido.Split(' ')[0]) * int.Parse(identificador.Contenido)).ToString();
+                                                dgvTripleta.Rows.Add(misIden[i].Token, identificador.Token, "OPA3");
+                                            }
+                                        }
+                                    }
+                                }
+                                else if (strTokenAnterior.Contains("CNU"))
+                                {
+                                    foreach (KeyValuePair<string, int> constnum in listaConstantesNumerica)
+                                    {
+                                        if (strTokenAnterior.Contains(constnum.Key))
+                                        {
+                                            misIden[i].Contenido = (int.Parse(misIden[i].Contenido.Split(' ')[0]) * constnum.Value).ToString();
+                                            dgvTripleta.Rows.Add(misIden[i].Token, constnum.Key, "OPA3");
+                                        }
+                                    }
+                                }
+                                break;
+                            case "OPA4":
+                                if (strTokenAnterior.Contains("IDE"))
+                                {
+                                    foreach (Identificador identificador in misIden)
+                                    {
+                                        if (strTokenAnterior.Contains(identificador.Token))
+                                        {
+                                            if (identificador.Tipo.Equals("Entero"))
+                                            {
+                                                misIden[i].Contenido = (int.Parse(misIden[i].Contenido.Split(' ')[0]) / int.Parse(identificador.Contenido)).ToString();
+                                                dgvTripleta.Rows.Add(misIden[i].Token, identificador.Token, "OPA4");
+                                            }
+                                        }
+                                    }
+                                }
+                                else if (strTokenAnterior.Contains("CNU"))
+                                {
+                                    foreach (KeyValuePair<string, int> constnum in listaConstantesNumerica)
+                                    {
+                                        if (strTokenAnterior.Contains(constnum.Key))
+                                        {
+                                            misIden[i].Contenido = (int.Parse(misIden[i].Contenido.Split(' ')[0]) / constnum.Value).ToString();
+                                            dgvTripleta.Rows.Add(misIden[i].Token, constnum.Key, "OPA4");
+                                        }
+                                    }
+                                }
+                                break;
+                            case "OPA5":
+                                if (strTokenAnterior.Contains("IDE"))
+                                {
+                                    foreach (Identificador identificador in misIden)
+                                    {
+                                        if (strTokenAnterior.Contains(identificador.Token))
+                                        {
+                                            if (identificador.Tipo.Equals("Entero"))
+                                            {
+                                                misIden[i].Contenido = (int.Parse(misIden[i].Contenido.Split(' ')[0]) ^ int.Parse(identificador.Contenido)).ToString();
+                                                dgvTripleta.Rows.Add(misIden[i].Token, identificador.Token, "OPA5");
+                                            }
+                                        }
+                                    }
+                                }
+                                else if (strTokenAnterior.Contains("CNU"))
+                                {
+                                    foreach (KeyValuePair<string, int> constnum in listaConstantesNumerica)
+                                    {
+                                        if (strTokenAnterior.Contains(constnum.Key))
+                                        {
+                                            misIden[i].Contenido = (int.Parse(misIden[i].Contenido.Split(' ')[0]) ^ constnum.Value).ToString();
+                                            dgvTripleta.Rows.Add(misIden[i].Token, constnum.Key, "OPA5");
+                                        }
+                                    }
+                                }
+                                break;
+                            case "OPR5":
+                                if (strTokenAnterior.Contains("IDE"))
+                                {
+                                    foreach (Identificador identificador in misIden)
+                                    {
+                                        if (strTokenAnterior.Contains(identificador.Token))
+                                        {
+                                            misIden[i].Contenido = identificador.Contenido.Substring(identificador.Contenido.IndexOf('['));
+                                            dgvTripleta.Rows.Add(misIden[i].Token, identificador.Token, "OPR5");
+                                        }
+                                    }
+                                }
+                                else if (strTokenAnterior.Contains("CNU"))
+                                {
+                                    foreach (KeyValuePair<string, int> constnum in listaConstantesNumerica)
+                                    {
+                                        if (strTokenAnterior.Contains(constnum.Key))
+                                        {
+                                            misIden[i].Contenido = constnum.Value.ToString();
+                                            dgvTripleta.Rows.Add(misIden[i].Token, constnum.Key, "OPR5");
+                                        }
+                                    }
+                                }
+                                else if (strTokenAnterior.Contains("CADE"))
+                                {
+                                    foreach (KeyValuePair<string, string> cadena in listaCadenas)
+                                    {
+                                        if (strTokenAnterior.Contains(cadena.Key))
+                                        {
+                                            misIden[i].Contenido = cadena.Value;
+                                            dgvTripleta.Rows.Add(misIden[i].Token, cadena.Key, "OPR5");
+                                        }
+                                    }
+                                }
+                                break;
+                        }
+                    }
+                    break;
+                }
+            }
         }
 
         PostFijo miPostifjo = new PostFijo();
@@ -842,7 +1308,6 @@ namespace PrinterLanguage
                                     strPostfijo = strPostfijo.Replace("OR", "OPL2");
                                     strPostfijo = strPostfijo.Replace("NOT", "OPL3");
                                     strAux += miPostifjo.TransformarPostfijo(strPostfijo) + " ";
-                                    MessageBox.Show("Infijo: " + strPostfijo + "\nPostfijo: " + strAux);
                                     strPostfijo = "";
                                     j += 1;
                                 }
@@ -882,6 +1347,13 @@ namespace PrinterLanguage
                 }
             }
             rtxPostfijo.Text = strAux;
+            string[] lineasCorregidas = rtxPostfijo.Lines;
+            rtxPostfijo.Text = "";
+            for (int i = 0; i < lineasCorregidas.Count(); i++)
+            {
+                lineasCorregidas[i] = lineasCorregidas[i].Replace("  ", " ");
+                rtxPostfijo.Text += lineasCorregidas[i]+"\n";
+            }
         }
     }
 }
