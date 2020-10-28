@@ -98,6 +98,14 @@
             this.dataGridViewTextBoxColumn10 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dataGridViewTextBoxColumn11 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dataGridViewTextBoxColumn12 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.btnAmarillo = new System.Windows.Forms.Panel();
+            this.btnRojo = new System.Windows.Forms.Panel();
+            this.btnVerde = new System.Windows.Forms.Panel();
+            this.label13 = new System.Windows.Forms.Label();
+            this.pantalla = new System.Windows.Forms.PictureBox();
+            this.impresora = new System.Windows.Forms.PictureBox();
+            this.hoja = new System.Windows.Forms.PictureBox();
+            this.hojaEscaner = new System.Windows.Forms.PictureBox();
             ((System.ComponentModel.ISupportInitialize)(this.dgvIdentificadores)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgvConstantesNumericas)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgvTripleta)).BeginInit();
@@ -105,6 +113,10 @@
             ((System.ComponentModel.ISupportInitialize)(this.dgvTrue)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgvFalse)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgvLoop)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pantalla)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.impresora)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.hoja)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.hojaEscaner)).BeginInit();
             this.SuspendLayout();
             // 
             // rtxtCodigo
@@ -114,7 +126,7 @@
             this.rtxtCodigo.Font = new System.Drawing.Font("Consolas", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.rtxtCodigo.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(192)))), ((int)(((byte)(192)))));
             this.rtxtCodigo.Location = new System.Drawing.Point(11, 30);
-            this.rtxtCodigo.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.rtxtCodigo.Margin = new System.Windows.Forms.Padding(2);
             this.rtxtCodigo.Name = "rtxtCodigo";
             this.rtxtCodigo.Size = new System.Drawing.Size(398, 227);
             this.rtxtCodigo.TabIndex = 0;
@@ -126,7 +138,7 @@
             this.btnEjecutar.Cursor = System.Windows.Forms.Cursors.Default;
             this.btnEjecutar.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnEjecutar.Location = new System.Drawing.Point(144, 263);
-            this.btnEjecutar.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.btnEjecutar.Margin = new System.Windows.Forms.Padding(2);
             this.btnEjecutar.Name = "btnEjecutar";
             this.btnEjecutar.Size = new System.Drawing.Size(91, 30);
             this.btnEjecutar.TabIndex = 0;
@@ -150,7 +162,7 @@
             this.txtNumRenglon.Enabled = false;
             this.txtNumRenglon.Font = new System.Drawing.Font("Consolas", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtNumRenglon.Location = new System.Drawing.Point(369, 271);
-            this.txtNumRenglon.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.txtNumRenglon.Margin = new System.Windows.Forms.Padding(2);
             this.txtNumRenglon.Name = "txtNumRenglon";
             this.txtNumRenglon.Size = new System.Drawing.Size(39, 23);
             this.txtNumRenglon.TabIndex = 0;
@@ -162,7 +174,7 @@
             this.btnCargarArchivo.Cursor = System.Windows.Forms.Cursors.Default;
             this.btnCargarArchivo.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnCargarArchivo.Location = new System.Drawing.Point(11, 263);
-            this.btnCargarArchivo.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.btnCargarArchivo.Margin = new System.Windows.Forms.Padding(2);
             this.btnCargarArchivo.Name = "btnCargarArchivo";
             this.btnCargarArchivo.Size = new System.Drawing.Size(129, 30);
             this.btnCargarArchivo.TabIndex = 0;
@@ -197,7 +209,7 @@
             this.txtSubCadenaAEvaluar.Enabled = false;
             this.txtSubCadenaAEvaluar.Font = new System.Drawing.Font("Consolas", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtSubCadenaAEvaluar.Location = new System.Drawing.Point(11, 313);
-            this.txtSubCadenaAEvaluar.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.txtSubCadenaAEvaluar.Margin = new System.Windows.Forms.Padding(2);
             this.txtSubCadenaAEvaluar.Name = "txtSubCadenaAEvaluar";
             this.txtSubCadenaAEvaluar.Size = new System.Drawing.Size(398, 23);
             this.txtSubCadenaAEvaluar.TabIndex = 0;
@@ -207,7 +219,7 @@
             this.txtCadenaDeTokens.Enabled = false;
             this.txtCadenaDeTokens.Font = new System.Drawing.Font("Consolas", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtCadenaDeTokens.Location = new System.Drawing.Point(11, 362);
-            this.txtCadenaDeTokens.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.txtCadenaDeTokens.Margin = new System.Windows.Forms.Padding(2);
             this.txtCadenaDeTokens.Name = "txtCadenaDeTokens";
             this.txtCadenaDeTokens.Size = new System.Drawing.Size(398, 23);
             this.txtCadenaDeTokens.TabIndex = 0;
@@ -219,7 +231,7 @@
             this.rtxtCodigoIntermedio.Font = new System.Drawing.Font("Consolas", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.rtxtCodigoIntermedio.ForeColor = System.Drawing.Color.White;
             this.rtxtCodigoIntermedio.Location = new System.Drawing.Point(417, 30);
-            this.rtxtCodigoIntermedio.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.rtxtCodigoIntermedio.Margin = new System.Windows.Forms.Padding(2);
             this.rtxtCodigoIntermedio.Name = "rtxtCodigoIntermedio";
             this.rtxtCodigoIntermedio.Size = new System.Drawing.Size(365, 308);
             this.rtxtCodigoIntermedio.TabIndex = 0;
@@ -263,7 +275,7 @@
             this.dgvIdentificadores.DefaultCellStyle = dataGridViewCellStyle2;
             this.dgvIdentificadores.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(47)))), ((int)(((byte)(47)))), ((int)(((byte)(47)))));
             this.dgvIdentificadores.Location = new System.Drawing.Point(11, 613);
-            this.dgvIdentificadores.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.dgvIdentificadores.Margin = new System.Windows.Forms.Padding(2);
             this.dgvIdentificadores.Name = "dgvIdentificadores";
             this.dgvIdentificadores.RowHeadersVisible = false;
             this.dgvIdentificadores.RowHeadersWidth = 62;
@@ -298,7 +310,7 @@
             this.dgvConstantesNumericas.DefaultCellStyle = dataGridViewCellStyle4;
             this.dgvConstantesNumericas.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(47)))), ((int)(((byte)(47)))), ((int)(((byte)(47)))));
             this.dgvConstantesNumericas.Location = new System.Drawing.Point(230, 814);
-            this.dgvConstantesNumericas.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.dgvConstantesNumericas.Margin = new System.Windows.Forms.Padding(2);
             this.dgvConstantesNumericas.Name = "dgvConstantesNumericas";
             this.dgvConstantesNumericas.RowHeadersVisible = false;
             this.dgvConstantesNumericas.RowHeadersWidth = 62;
@@ -548,7 +560,7 @@
             this.dgvTripleta.DefaultCellStyle = dataGridViewCellStyle6;
             this.dgvTripleta.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(47)))), ((int)(((byte)(47)))), ((int)(((byte)(47)))));
             this.dgvTripleta.Location = new System.Drawing.Point(1166, 30);
-            this.dgvTripleta.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.dgvTripleta.Margin = new System.Windows.Forms.Padding(2);
             this.dgvTripleta.Name = "dgvTripleta";
             this.dgvTripleta.ReadOnly = true;
             this.dgvTripleta.RowHeadersVisible = false;
@@ -635,7 +647,7 @@
             this.dgvCadenas.DefaultCellStyle = dataGridViewCellStyle8;
             this.dgvCadenas.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(47)))), ((int)(((byte)(47)))), ((int)(((byte)(47)))));
             this.dgvCadenas.Location = new System.Drawing.Point(11, 814);
-            this.dgvCadenas.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.dgvCadenas.Margin = new System.Windows.Forms.Padding(2);
             this.dgvCadenas.Name = "dgvCadenas";
             this.dgvCadenas.RowHeadersVisible = false;
             this.dgvCadenas.RowHeadersWidth = 62;
@@ -687,7 +699,7 @@
             this.dgvTrue.DefaultCellStyle = dataGridViewCellStyle10;
             this.dgvTrue.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(47)))), ((int)(((byte)(47)))), ((int)(((byte)(47)))));
             this.dgvTrue.Location = new System.Drawing.Point(1166, 716);
-            this.dgvTrue.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.dgvTrue.Margin = new System.Windows.Forms.Padding(2);
             this.dgvTrue.Name = "dgvTrue";
             this.dgvTrue.ReadOnly = true;
             this.dgvTrue.RowHeadersVisible = false;
@@ -768,7 +780,7 @@
             this.dgvFalse.DefaultCellStyle = dataGridViewCellStyle12;
             this.dgvFalse.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(47)))), ((int)(((byte)(47)))), ((int)(((byte)(47)))));
             this.dgvFalse.Location = new System.Drawing.Point(1538, 715);
-            this.dgvFalse.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.dgvFalse.Margin = new System.Windows.Forms.Padding(2);
             this.dgvFalse.Name = "dgvFalse";
             this.dgvFalse.ReadOnly = true;
             this.dgvFalse.RowHeadersVisible = false;
@@ -849,7 +861,7 @@
             this.dgvLoop.DefaultCellStyle = dataGridViewCellStyle14;
             this.dgvLoop.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(47)))), ((int)(((byte)(47)))), ((int)(((byte)(47)))));
             this.dgvLoop.Location = new System.Drawing.Point(1539, 425);
-            this.dgvLoop.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.dgvLoop.Margin = new System.Windows.Forms.Padding(2);
             this.dgvLoop.Name = "dgvLoop";
             this.dgvLoop.ReadOnly = true;
             this.dgvLoop.RowHeadersVisible = false;
@@ -886,12 +898,100 @@
             this.dataGridViewTextBoxColumn12.Name = "dataGridViewTextBoxColumn12";
             this.dataGridViewTextBoxColumn12.ReadOnly = true;
             // 
+            // btnAmarillo
+            // 
+            this.btnAmarillo.BackColor = System.Drawing.Color.Transparent;
+            this.btnAmarillo.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.btnAmarillo.Location = new System.Drawing.Point(1604, 237);
+            this.btnAmarillo.Name = "btnAmarillo";
+            this.btnAmarillo.Size = new System.Drawing.Size(14, 15);
+            this.btnAmarillo.TabIndex = 33;
+            this.btnAmarillo.Visible = false;
+            // 
+            // btnRojo
+            // 
+            this.btnRojo.BackColor = System.Drawing.Color.Transparent;
+            this.btnRojo.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.btnRojo.Location = new System.Drawing.Point(1604, 255);
+            this.btnRojo.Name = "btnRojo";
+            this.btnRojo.Size = new System.Drawing.Size(14, 15);
+            this.btnRojo.TabIndex = 34;
+            this.btnRojo.Visible = false;
+            // 
+            // btnVerde
+            // 
+            this.btnVerde.BackColor = System.Drawing.Color.Transparent;
+            this.btnVerde.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.btnVerde.Location = new System.Drawing.Point(1604, 220);
+            this.btnVerde.Name = "btnVerde";
+            this.btnVerde.Size = new System.Drawing.Size(14, 15);
+            this.btnVerde.TabIndex = 32;
+            this.btnVerde.Visible = false;
+            // 
+            // label13
+            // 
+            this.label13.AutoSize = true;
+            this.label13.BackColor = System.Drawing.Color.Black;
+            this.label13.ForeColor = System.Drawing.SystemColors.Control;
+            this.label13.Location = new System.Drawing.Point(1692, 260);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(64, 18);
+            this.label13.TabIndex = 31;
+            this.label13.Text = "APAGADA";
+            // 
+            // pantalla
+            // 
+            this.pantalla.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.pantalla.Location = new System.Drawing.Point(1641, 253);
+            this.pantalla.Name = "pantalla";
+            this.pantalla.Size = new System.Drawing.Size(149, 24);
+            this.pantalla.TabIndex = 30;
+            this.pantalla.TabStop = false;
+            // 
+            // impresora
+            // 
+            this.impresora.BackColor = System.Drawing.Color.Transparent;
+            this.impresora.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.impresora.Location = new System.Drawing.Point(1578, 205);
+            this.impresora.Name = "impresora";
+            this.impresora.Size = new System.Drawing.Size(275, 157);
+            this.impresora.TabIndex = 28;
+            this.impresora.TabStop = false;
+            // 
+            // hoja
+            // 
+            this.hoja.BackColor = System.Drawing.Color.Transparent;
+            this.hoja.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.hoja.Location = new System.Drawing.Point(1637, 84);
+            this.hoja.Name = "hoja";
+            this.hoja.Size = new System.Drawing.Size(154, 230);
+            this.hoja.TabIndex = 29;
+            this.hoja.TabStop = false;
+            // 
+            // hojaEscaner
+            // 
+            this.hojaEscaner.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.hojaEscaner.Location = new System.Drawing.Point(1859, 212);
+            this.hojaEscaner.Name = "hojaEscaner";
+            this.hojaEscaner.Size = new System.Drawing.Size(269, 88);
+            this.hojaEscaner.TabIndex = 35;
+            this.hojaEscaner.TabStop = false;
+            this.hojaEscaner.Visible = false;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 18F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.Gray;
             this.ClientSize = new System.Drawing.Size(1911, 986);
+            this.Controls.Add(this.btnAmarillo);
+            this.Controls.Add(this.btnRojo);
+            this.Controls.Add(this.btnVerde);
+            this.Controls.Add(this.label13);
+            this.Controls.Add(this.pantalla);
+            this.Controls.Add(this.impresora);
+            this.Controls.Add(this.hoja);
+            this.Controls.Add(this.hojaEscaner);
             this.Controls.Add(this.label12);
             this.Controls.Add(this.dgvLoop);
             this.Controls.Add(this.label11);
@@ -944,6 +1044,10 @@
             ((System.ComponentModel.ISupportInitialize)(this.dgvTrue)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgvFalse)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgvLoop)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pantalla)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.impresora)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.hoja)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.hojaEscaner)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -1007,6 +1111,14 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn10;
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn11;
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn12;
+        private System.Windows.Forms.Panel btnAmarillo;
+        private System.Windows.Forms.Panel btnRojo;
+        private System.Windows.Forms.Panel btnVerde;
+        private System.Windows.Forms.Label label13;
+        private System.Windows.Forms.PictureBox pantalla;
+        private System.Windows.Forms.PictureBox impresora;
+        private System.Windows.Forms.PictureBox hoja;
+        private System.Windows.Forms.PictureBox hojaEscaner;
     }
 }
 
