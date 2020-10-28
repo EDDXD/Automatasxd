@@ -201,9 +201,6 @@ namespace PrinterLanguage
             dgvLoop.Rows.Clear();
             dgvTrue.Rows.Clear();
             dgvFalse.Rows.Clear();
-            dgvConstantesNumericas.Rows.Clear();
-            dgvIdentificadores.Rows.Clear();
-            dgvCadenas.Rows.Clear();
             rtxInfijo.Text = "";
             rtxPostfijo.Text = "";
             rtxtGramatica.Clear();
@@ -1223,7 +1220,7 @@ namespace PrinterLanguage
                         if (blnPermitido)
                         {
                             dgvTripleta.Rows.Add(dgvTripleta.Rows.Count, "----", strTipo, "----");
-                            dgvTripleta.Rows.Add(dgvTripleta.Rows.Count, "", string.Join(" ", lstInstruccionActual.Skip(1)), "PR05");
+                            dgvTripleta.Rows.Add(dgvTripleta.Rows.Count, lstInstruccionActual[0], string.Join(" ", lstInstruccionActual.Skip(1).Take(1)), "OPR5");
                         }
                         blnPermitido = true;
                         break;
