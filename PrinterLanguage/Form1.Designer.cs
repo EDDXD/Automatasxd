@@ -98,10 +98,10 @@
             this.dataGridViewTextBoxColumn10 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dataGridViewTextBoxColumn11 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dataGridViewTextBoxColumn12 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.label13 = new System.Windows.Forms.Label();
             this.btnAmarillo = new System.Windows.Forms.Panel();
             this.btnRojo = new System.Windows.Forms.Panel();
             this.btnVerde = new System.Windows.Forms.Panel();
-            this.label13 = new System.Windows.Forms.Label();
             this.pantalla = new System.Windows.Forms.PictureBox();
             this.impresora = new System.Windows.Forms.PictureBox();
             this.hoja = new System.Windows.Forms.PictureBox();
@@ -898,9 +898,21 @@
             this.dataGridViewTextBoxColumn12.Name = "dataGridViewTextBoxColumn12";
             this.dataGridViewTextBoxColumn12.ReadOnly = true;
             // 
+            // label13
+            // 
+            this.label13.AutoSize = true;
+            this.label13.BackColor = System.Drawing.Color.Black;
+            this.label13.ForeColor = System.Drawing.SystemColors.Control;
+            this.label13.Location = new System.Drawing.Point(1686, 256);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(64, 18);
+            this.label13.TabIndex = 31;
+            this.label13.Text = "APAGADA";
+            // 
             // btnAmarillo
             // 
             this.btnAmarillo.BackColor = System.Drawing.Color.Transparent;
+            this.btnAmarillo.BackgroundImage = global::PrinterLanguage.Properties.Resources.boton_amarillo;
             this.btnAmarillo.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.btnAmarillo.Location = new System.Drawing.Point(1604, 237);
             this.btnAmarillo.Name = "btnAmarillo";
@@ -911,6 +923,7 @@
             // btnRojo
             // 
             this.btnRojo.BackColor = System.Drawing.Color.Transparent;
+            this.btnRojo.BackgroundImage = global::PrinterLanguage.Properties.Resources.boton_rojo;
             this.btnRojo.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.btnRojo.Location = new System.Drawing.Point(1604, 255);
             this.btnRojo.Name = "btnRojo";
@@ -921,6 +934,7 @@
             // btnVerde
             // 
             this.btnVerde.BackColor = System.Drawing.Color.Transparent;
+            this.btnVerde.BackgroundImage = global::PrinterLanguage.Properties.Resources.boton_verde;
             this.btnVerde.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.btnVerde.Location = new System.Drawing.Point(1604, 220);
             this.btnVerde.Name = "btnVerde";
@@ -928,19 +942,9 @@
             this.btnVerde.TabIndex = 32;
             this.btnVerde.Visible = false;
             // 
-            // label13
-            // 
-            this.label13.AutoSize = true;
-            this.label13.BackColor = System.Drawing.Color.Black;
-            this.label13.ForeColor = System.Drawing.SystemColors.Control;
-            this.label13.Location = new System.Drawing.Point(1692, 260);
-            this.label13.Name = "label13";
-            this.label13.Size = new System.Drawing.Size(64, 18);
-            this.label13.TabIndex = 31;
-            this.label13.Text = "APAGADA";
-            // 
             // pantalla
             // 
+            this.pantalla.BackgroundImage = global::PrinterLanguage.Properties.Resources.pantalla;
             this.pantalla.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.pantalla.Location = new System.Drawing.Point(1641, 253);
             this.pantalla.Name = "pantalla";
@@ -951,6 +955,7 @@
             // impresora
             // 
             this.impresora.BackColor = System.Drawing.Color.Transparent;
+            this.impresora.BackgroundImage = global::PrinterLanguage.Properties.Resources.fondo;
             this.impresora.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.impresora.Location = new System.Drawing.Point(1578, 205);
             this.impresora.Name = "impresora";
@@ -961,6 +966,7 @@
             // hoja
             // 
             this.hoja.BackColor = System.Drawing.Color.Transparent;
+            this.hoja.BackgroundImage = global::PrinterLanguage.Properties.Resources.hoja;
             this.hoja.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.hoja.Location = new System.Drawing.Point(1637, 84);
             this.hoja.Name = "hoja";
@@ -970,6 +976,7 @@
             // 
             // hojaEscaner
             // 
+            this.hojaEscaner.BackgroundImage = global::PrinterLanguage.Properties.Resources.hojaEscaner;
             this.hojaEscaner.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.hojaEscaner.Location = new System.Drawing.Point(1859, 212);
             this.hojaEscaner.Name = "hojaEscaner";

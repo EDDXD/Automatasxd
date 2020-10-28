@@ -70,6 +70,7 @@
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
     </Compile>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -102,6 +103,30 @@
       <Isolated>False</Isolated>
       <EmbedInteropTypes>True</EmbedInteropTypes>
     </COMReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Properties\Resources\frente.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Properties\Resources\fondo.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Properties\Resources\pantalla.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Properties\Resources\boton verde.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Properties\Resources\boton amarillo.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Properties\Resources\boton rojo.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Properties\Resources\hoja.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Properties\Resources\hojaEscaner.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

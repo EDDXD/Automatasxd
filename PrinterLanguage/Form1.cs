@@ -1570,5 +1570,103 @@ namespace PrinterLanguage
                 rtxPostfijo.Text += lineasCorregidas[i] + "\n";
             }
         }
+
+        //métodos para animaciones
+        public void ImprimirImpresora()
+        {
+            hoja.Location = new Point(1455, 42);
+            btnVerde.Visible = true;
+            label8.Text = "IMPRIMIENDO";
+            label8.Location = new Point(1490, 218);
+            Transition.run(label8, "BackColor", Color.LawnGreen, new TransitionType_Linear(2000));
+            Transition t = new Transition(new TransitionType_EaseInEaseOut(2000));
+            Transition.run(label8, "BackColor", Color.Black, new TransitionType_Linear(2000));
+            t.add(hoja, "Top", 350);
+            t.run();
+            label8.ForeColor = Color.Black;
+            Transition.run(label8, "ForeColor", Color.White, new TransitionType_Linear(2000));
+        }
+
+        public void InterrumpirImpresora()
+        {
+
+            label8.BackColor = Color.Black;
+            label8.ForeColor = Color.Black;
+            hoja.Location = new Point(1455, 42);
+            btnAmarillo.Visible = true;
+            label8.Text = "Interrumpida";
+            label8.Location = new Point(1490, 218);
+            Transition.run(label8, "BackColor", Color.Yellow, new TransitionType_Linear(2000));
+            Transition t = new Transition(new TransitionType_EaseInEaseOut(1500));
+            t.add(hoja, "Top", 120);
+            t.run();
+            Transition t2 = new Transition(new TransitionType_EaseInEaseOut(3000));
+            t2.add(hojaEscaner, "Left", 1600);
+            t2.run();
+        }
+
+        public void ApagarImpresora()
+        {
+            label8.ForeColor = Color.White;
+            btnAmarillo.BackgroundImage = null;
+            btnAmarillo.Visible = true;
+            btnRojo.BackgroundImage = null;
+            btnRojo.Visible = true;
+            label8.Text = "APAGANDO";
+            label8.Location = new Point(1490, 218);
+            Transition.run(btnAmarillo, "BackColor", Color.Black, new TransitionType_Linear(2000));
+            Transition.run(btnRojo, "BackColor", Color.Black, new TransitionType_Linear(2000));
+            Transition.run(label8, "ForeColor", Color.Black, new TransitionType_Linear(2000));
+            label8.ForeColor = Color.White;
+            label8.BackColor = Color.Black;
+        }
+
+
+        public void EncenderImpresora()
+        {
+            btnAmarillo.BackgroundImage = null;
+            btnAmarillo.Visible = true;
+            btnRojo.BackgroundImage = null;
+            btnRojo.Visible = true;
+            btnVerde.BackgroundImage = null;
+            btnVerde.Visible = true;
+            btnAmarillo.BackColor = Color.Black;
+            btnRojo.BackColor = Color.Black;
+            label8.Text = "ENCENDIENDO";
+            label8.ForeColor = Color.Black;
+            label8.BackColor = Color.Black;
+            label8.Location = new Point(1490, 218);
+            Transition.run(btnVerde, "BackColor", Color.Green, new TransitionType_Linear(2000));
+            Transition.run(btnAmarillo, "BackColor", Color.Yellow, new TransitionType_Linear(2000));
+            Transition.run(btnRojo, "BackColor", Color.Red, new TransitionType_Linear(2000));
+            Transition.run(label8, "ForeColor", Color.White, new TransitionType_Linear(2000));
+            label8.ForeColor = Color.White;
+        }
+
+        public void EscanearImpresora()
+        {
+            hojaEscaner.Location = new Point(1677, 170);
+            hojaEscaner.Visible = true;
+            btnVerde.Visible = true;
+            label8.Text = "ESCANEANDO";
+            label8.Location = new Point(1490, 218);
+            Transition.run(label8, "BackColor", Color.LawnGreen, new TransitionType_Linear(2000));
+            Transition t = new Transition(new TransitionType_EaseInEaseOut(3000));
+            t.add(hojaEscaner, "Left", 1300);
+            t.run();
+            label8.ForeColor = Color.Black;
+        }
+
+        public void MensajeImpresora(string mensaje)
+        {
+            label8.ForeColor = Color.Black;
+            label8.BackColor = Color.Black;
+            hoja.Location = new Point(1455, 42);
+            btnAmarillo.Visible = true;
+            label8.Text = mensaje;
+            label8.Location = new Point(1490, 218);
+            Transition.run(label8, "BackColor", Color.Yellow, new TransitionType_Linear(2000));
+        }
+
     }
 }
