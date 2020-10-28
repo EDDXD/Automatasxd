@@ -18,6 +18,20 @@ namespace PrinterLanguage
         public Form1()
         {
             InitializeComponent();
+            dgvTripleta.Columns[0].Width = 35;
+            dgvTrue.Columns[0].Width = 35;
+            dgvFalse.Columns[0].Width = 35;
+            dgvLoop.Columns[0].Width = 35;
+
+            dgvTripleta.Columns[1].Width = 121;
+            dgvTrue.Columns[1].Width = 121;
+            dgvFalse.Columns[1].Width = 121;
+            dgvLoop.Columns[1].Width = 121;
+
+            dgvTripleta.Columns[2].Width = 121;
+            dgvTrue.Columns[2].Width = 121;
+            dgvFalse.Columns[2].Width = 121;
+            dgvLoop.Columns[2].Width = 121;
         }
 
         static string servidor = "192.185.131.135";
@@ -184,6 +198,12 @@ namespace PrinterLanguage
         private void btnEjecutar_Click(object sender, EventArgs e)
         {
             dgvTripleta.Rows.Clear();
+            dgvLoop.Rows.Clear();
+            dgvTrue.Rows.Clear();
+            dgvFalse.Rows.Clear();
+            dgvConstantesNumericas.Rows.Clear();
+            dgvIdentificadores.Rows.Clear();
+            dgvCadenas.Rows.Clear();
             rtxInfijo.Text = "";
             rtxPostfijo.Text = "";
             rtxtGramatica.Clear();
@@ -764,6 +784,9 @@ namespace PrinterLanguage
         private void btnSemantica_Click(object sender, EventArgs e)
         {
             dgvTripleta.Rows.Clear();
+            dgvLoop.Rows.Clear();
+            dgvTrue.Rows.Clear();
+            dgvFalse.Rows.Clear();
             blnError = false;
             rtxtSemantica.Text = "";
             MySqlConnection conect = new MySqlConnection(cadenaConexiong);
@@ -829,363 +852,558 @@ namespace PrinterLanguage
             }
         }
 
-        List<List<string>> listaOperaciones = new List<List<string>>();
-        List<string> listaActual = new List<string>();
+        Dictionary<string, List<string>> dctTripleta = new Dictionary<string, List<string>>();  //contiene todas las listas para la tripleta
+        List<string> lstInstruccionActual = new List<string>();                                 //la lista de la instruc actual
 
+        Dictionary<string, int> dctContadorTripleta = new Dictionary<string, int>();            //cuenta el tipo de instr
+        Dictionary<string, List<List<string>>> dctTrues = new Dictionary<string, List<List<string>>>();     //guarda las tripletas true
+        Dictionary<string, List<List<string>>> dctFalses = new Dictionary<string, List<List<string>>>();    //guarda las tripletas false
+        Dictionary<string, List<List<string>>> dctLoops = new Dictionary<string, List<List<string>>>();     //guarda las tripletas loop
+        Dictionary<string, int> dctPosicionInstruccion = new Dictionary<string, int>();
+
+        List<List<string>> lstTempLoop = new List<List<string>>();
+        List<List<string>> lstTempTrue = new List<List<string>>();
+        List<List<string>> lstTempFalse = new List<List<string>>();
+
+        bool blnHalladoGlobal = false;
+        Dictionary<string, string> dctRangosNoPermitidos = new Dictionary<string, string>();
         public void RellenarTripleta()
         {
-            listaOperaciones = new List<List<string>>();
-            listaActual = new List<string>();
-            string lineaActual = "";
-            string palabraActual = "";
-            string palabraActualOperacion = "";
-            for (int i = 0; i < rtxPostfijo.Lines.Count(); i++)
+            dctRangosNoPermitidos = new Dictionary<string, string>();
+            dctPosicionInstruccion = new Dictionary<string, int>();
+            dctTripleta = new Dictionary<string, List<string>>();
+            lstInstruccionActual = new List<string>();
+            dctTrues = new Dictionary<string, List<List<string>>>();
+            dctFalses = new Dictionary<string, List<List<string>>>();
+            dctLoops = new Dictionary<string, List<List<string>>>();
+
+            dgvTripleta.Rows.Clear();
+
+            dctContadorTripleta = new Dictionary<string, int>();
+            dctContadorTripleta.Add("MOSTRAR", 0);
+            dctContadorTripleta.Add("CAPTURAR", 0);
+            dctContadorTripleta.Add("IMPRIMIR", 0);
+            dctContadorTripleta.Add("SI", 0);
+            dctContadorTripleta.Add("EMPIEZA", 0);
+            dctContadorTripleta.Add("ASIGOPAR", 0);
+            dctContadorTripleta.Add("ASIG", 0);
+
+            string strLinea = "";
+            string strToken = "";
+
+            //Primero rellenamos la lista de instrucciones válidas
+            for (int i = 0; i < rtxPostfijo.Lines.Count(); i++) //recorremos la lista de instr de rtx postfijo
             {
-                lineaActual = rtxPostfijo.Lines[i];
-                if (lineaActual.Contains("PR06") || lineaActual.Contains("OPA") || lineaActual.Contains("PR10") || lineaActual.Contains("PR05") || lineaActual.Contains("OPR5"))
+                strLinea = rtxPostfijo.Lines[i]; //guardamos la linea actual
+                if (strLinea != "" && strLinea != " ") //evitamos ciclar con vacios
                 {
-                    for (int j = 0; j < lineaActual.Split(' ').Count(); j++)
+                    //Si existe cualquiera de las siguientes, entonces no evalues la linea
+                    //PR01 = INICIO
+                    //PR02 = FIN
+                    //PR08 = SINO
+                    //PR09 = FINSI
+                    //PR12 = FINEMPIEZA
+                    if (!strLinea.Contains("PR01") && !strLinea.Contains("PR02"))
                     {
-                        palabraActual = lineaActual.Split(' ')[j];
-                        if (palabraActual.Contains("PR06"))
+                        for (int j = 0; j < strLinea.Split(' ').Count(); j++)
                         {
-                            listaActual.Add("--SI--");
-                            for (int k = j + 1; k < lineaActual.Split(' ').Count(); k++) //EMPIEZA UN TOKEN DESPUES DE PR06
+                            strToken = strLinea.Split(' ')[j]; //guardamos el token actual
+
+                            if (strToken.Contains("PR10"))                  //Si contiene EMPIEZA, entonces enciende la bandera blnTRLOOP para que todo lo que haya a continuacion se anada a la tripleta TRLOOP
                             {
-                                palabraActualOperacion = lineaActual.Split(' ')[k];
-                                if (!palabraActualOperacion.Contains("PR07")) //SOLO SI NO HEMOS LLEGADO A PR07 SIGUE METIENDO A LA LISTA
+                                //blnTRLOOP = true;
+                                dgvLoop.Rows.Add(dgvLoop.Rows.Count, "****", "TRLOOP" + dctContadorTripleta["EMPIEZA"], "****");
+                                dctRangosNoPermitidos.Add("TRLOOP" + dctContadorTripleta["EMPIEZA"], i.ToString());
+                            }
+                            else if (strToken.Contains("PR12"))             //Si contiene FINEMPIEZA, entonces se apaga la bandera blnTRLOOP
+                            {
+                                dctLoops.Add("TRLOOP" + (dctContadorTripleta["EMPIEZA"] - 1).ToString(), lstTempLoop);
+                                dctRangosNoPermitidos["TRLOOP" + (dctContadorTripleta["EMPIEZA"] - 1).ToString()] += " " + i;
+                                lstTempLoop = new List<List<string>>();
+                                //blnTRLOOP = false;
+                            }
+                            else if (strToken.Contains("PR06"))             //Si contiene SI, entonces enciende la bandera blnTRTRUE para que todo lo que haya a continuacion se anada a la tripleta TRTRUE
+                            {
+                                //blnTRTRUE = true;
+                                dgvTrue.Rows.Add(dgvTrue.Rows.Count, "****", "TRTRUE" + dctContadorTripleta["SI"], "****");
+                                dctRangosNoPermitidos.Add("TRTRUE" + dctContadorTripleta["SI"], i.ToString());
+                            }
+                            else if (strToken.Contains("PR08"))             //Si contiene SINO, entonces se apaga la bandera blnTRTRUE y se enciende blnTRFALSE para que todo lo que haya a continuacion se anada a la tripleta TRFALSE
+                            {
+                                //blnTRTRUE = false;
+                                //blnTRFALSE = true;
+                                dctTrues.Add("TRTRUE" + dctContadorTripleta["SI"], lstTempTrue);
+                                dctRangosNoPermitidos["TRTRUE" + (dctContadorTripleta["SI"] - 1).ToString()] += " " + i;
+                                dctRangosNoPermitidos.Add("TRFALSE" + (dctContadorTripleta["SI"] - 1).ToString(), (i + 1).ToString());
+
+                                lstTempTrue = new List<List<string>>();
+                                dgvFalse.Rows.Add(dgvFalse.Rows.Count, "****", "TRFALSE" + (dctContadorTripleta["SI"] - 1).ToString(), "****");
+                            }
+                            else if (strToken.Contains("PR09"))             //Si contiene FINSI, entonces se apaga la bandera blnTRTRUE y blnTRFALSE
+                            {
+                                dctFalses.Add("TRFALSE" + (dctContadorTripleta["SI"] - 1).ToString(), lstTempFalse);
+                                if (dctRangosNoPermitidos.ContainsKey("TRFALSE" + (dctContadorTripleta["SI"] - 1).ToString()))
                                 {
-                                    listaActual.Add(palabraActualOperacion);
+                                    dctRangosNoPermitidos["TRFALSE" + (dctContadorTripleta["SI"] - 1).ToString()] += " " + i;
                                 }
                                 else
                                 {
-                                    j = k;
-                                    break;
+                                    dctRangosNoPermitidos["TRTRUE" + (dctContadorTripleta["SI"] - 1).ToString()] += " " + i;
                                 }
+
+                                lstTempFalse = new List<List<string>>();
+                                //blnTRTRUE = false;
+                                //blnTRFALSE = false;
                             }
-                            //YA SE ACABO DE CONCATENAR LA COND DEL IF
-                            listaOperaciones.Add(listaActual);
-                            listaActual = new List<string>();
-                        }
-                        else if (palabraActual.Contains("PR10"))
-                        {
-                            listaActual.Add("--EMPIEZA--");
-                            for (int k = j + 1; k < lineaActual.Split(' ').Count(); k++) //EMPIEZA UN TOKEN DESPUES DE PR10
-                            {
-                                palabraActualOperacion = lineaActual.Split(' ')[k];
-                                if (!palabraActualOperacion.Contains("PR11")) //SOLO SI NO HEMOS LLEGADO A PR11 SIGUE METIENDO A LA LISTA
-                                {
-                                    listaActual.Add(palabraActualOperacion);
-                                }
-                                else
-                                {
-                                    j = k - 1;
-                                    break;
-                                }
-                            }
-                            //YA SE ACABO DE CONCATENAR LA INICIACION DEL CICLO EMPIEZA 
-                            listaOperaciones.Add(listaActual);
-                            listaActual = new List<string>();
-                        }
-                        else if (palabraActual.Contains("PR11"))
-                        {
-                            listaActual.Add("--HASTA--");
-                            for (int k = j + 1; k < lineaActual.Split(' ').Count(); k++) //EMPIEZA UN TOKEN DESPUES DE PR10
-                            {
-                                palabraActualOperacion = lineaActual.Split(' ')[k];
-                                if (!palabraActualOperacion.Equals("")) //SOLO SI NO HEMOS LLEGADO A UN ESPACIO VACIO SIGUE METIENDO A LA LISTA
-                                {
-                                    listaActual.Add(palabraActualOperacion);
-                                }
-                                else
-                                {
-                                    j = k - 1;
-                                    break;
-                                }
-                            }
-                            //YA SE ACABO DE CONCATENAR LA INICIACION DEL CICLO EMPIEZA 
-                            listaOperaciones.Add(listaActual);
-                            listaActual = new List<string>();
-                        }
-                        else if (palabraActual.Contains("OPR5"))
-                        {
-                            listaActual.Add("--ASIG--");
-                            for (int k = 0; k < lineaActual.Split(' ').Count(); k++) //EMPIEZA DESDE CERO
-                            {
-                                palabraActualOperacion = lineaActual.Split(' ')[k];
-                                if (!palabraActualOperacion.Equals(" ")) //SOLO SI NO HEMOS LLEGADO A UN ESPACIO VACIO SIGUE METIENDO A LA LISTA
-                                {
-                                    listaActual.Add(palabraActualOperacion);
-                                }
-                                else
-                                {
-                                    j = k - 1;
-                                    break;
-                                }
-                            }
-                            //YA SE ACABO DE CONCATENAR LA ASIGNACION
-                            listaOperaciones.Add(listaActual);
-                            listaActual = new List<string>();
-                        }
-                        else if (palabraActual.Contains("PR05") && lineaActual.Contains("CES8"))
-                        {
-                            listaActual.Add("--CONCAT--");
-                            for (int k = j + 1; k < lineaActual.Split(' ').Count(); k++) //EMPIEZA UN TOKEN DESPUÉS DE PR05
-                            {
-                                palabraActualOperacion = lineaActual.Split(' ')[k];
-                                if (!palabraActualOperacion.Equals("")) //SOLO SI NO HEMOS LLEGADO A UN ESPACIO VACIO SIGUE METIENDO A LA LISTA
-                                {
-                                    if (palabraActualOperacion != "CES8")
-                                    {
-                                        listaActual.Add(palabraActualOperacion);
-                                    }
-                                }
-                                else
-                                {
-                                    j = k - 1;
-                                    break;
-                                }
-                            }
-                            //YA SE ACABO DE CONCATENAR LA CADENA
-                            listaOperaciones.Add(listaActual);
-                            listaActual = new List<string>();
+
+                            DetectarInstruccion(strToken, strLinea, i);
+                            if (blnHalladoGlobal)
+                                break;
                         }
                     }
                 }
             }
-            string strOperacion = "";
-            for (int i = 0; i < listaOperaciones.Count(); i++)
+            //Aqui se le da estructura a la TRIPLETA
+            string strTipo = "";
+            bool blnPermitido = true;
+
+            for (int i = 0; i < dctTripleta.Count(); i++)
             {
-                strOperacion = listaOperaciones[i][0];
-                //dgvTripleta.Rows.Add(listaOperaciones[i][i]);
-                if (strOperacion.Contains("ASIG"))
-                {
-                    SwitchEvalOP(listaOperaciones[i]);
-                }
-                else if (strOperacion.Contains("EMPIEZA"))
-                {
+                lstInstruccionActual = dctTripleta.ElementAt(i).Value;
+                strTipo = dctTripleta.ElementAt(i).Key;
 
-                }
-                else if (strOperacion.Contains("HASTA"))
+                for (int j = 0; j < lstInstruccionActual.Count(); j++)
                 {
+                    if (strTipo.Contains("MOSTRAR"))
+                    {
+                        foreach (KeyValuePair<string, string> rangos in dctRangosNoPermitidos)
+                        {
+                            if ((dctPosicionInstruccion[strTipo] >= int.Parse(rangos.Value.Split(' ')[0]) && (dctPosicionInstruccion[strTipo] <= int.Parse(rangos.Value.Split(' ')[1]))))
+                            {
+                                if (rangos.Key.Contains("TRLOOP"))
+                                {
+                                    lstTempLoop.Add(lstInstruccionActual);
+                                    dgvLoop.Rows.Add(dgvLoop.Rows.Count, "----", strTipo, "----");
+                                    dgvLoop.Rows.Add(dgvLoop.Rows.Count, "", string.Join(" ", lstInstruccionActual.Skip(1)), "PR03");
+                                }
+                                else if (rangos.Key.Contains("TRTRUE"))
+                                {
+                                    lstTempTrue.Add(lstInstruccionActual);
+                                    dgvTrue.Rows.Add(dgvTrue.Rows.Count, "----", strTipo, "----");
+                                    dgvTrue.Rows.Add(dgvTrue.Rows.Count, "", string.Join(" ", lstInstruccionActual.Skip(1)), "PR03");
+                                }
+                                else
+                                {
+                                    lstTempFalse.Add(lstInstruccionActual);
+                                    dgvFalse.Rows.Add(dgvFalse.Rows.Count, "----", strTipo, "----");
+                                    dgvFalse.Rows.Add(dgvFalse.Rows.Count, "", string.Join(" ", lstInstruccionActual.Skip(1)), "PR03");
+                                }
+                                blnPermitido = false;
+                            }
+                        }
+                        if (blnPermitido)
+                        {
+                            dgvTripleta.Rows.Add(dgvTripleta.Rows.Count, "----", strTipo, "----");
+                            dgvTripleta.Rows.Add(dgvTripleta.Rows.Count, "", string.Join(" ", lstInstruccionActual.Skip(1)), "PR03");
+                        }
+                        blnPermitido = true;
+                        break;
+                    }
+                    else if (strTipo.Contains("CAPTURAR"))
+                    {
+                        foreach (KeyValuePair<string, string> rangos in dctRangosNoPermitidos)
+                        {
+                            if ((dctPosicionInstruccion[strTipo] >= int.Parse(rangos.Value.Split(' ')[0]) && (dctPosicionInstruccion[strTipo] <= int.Parse(rangos.Value.Split(' ')[1]))))
+                            {
+                                if (rangos.Key.Contains("TRLOOP"))  //Si la bandera blnTRLOOP esta encendida, entonces se anade a la TRLOOP
+                                {
+                                    lstTempLoop.Add(lstInstruccionActual);
+                                    dgvLoop.Rows.Add(dgvLoop.Rows.Count, "----", strTipo, "----");
+                                    dgvLoop.Rows.Add(dgvLoop.Rows.Count, string.Join(" ", lstInstruccionActual.Skip(1)), "Leer del teclado", "OPR5");
+                                }
+                                else if (rangos.Key.Contains("TRTRUE"))  //Si la bandera blnTRTRUE esta encendida, entonces se anade a la TRTRUE
+                                {
+                                    lstTempTrue.Add(lstInstruccionActual);
+                                    dgvTrue.Rows.Add(dgvTrue.Rows.Count, "----", strTipo, "----");
+                                    dgvTrue.Rows.Add(dgvTrue.Rows.Count, string.Join(" ", lstInstruccionActual.Skip(1)), "Leer del teclado", "OPR5");
+                                }
+                                else  //Si la bandera blnTRFALSE esta encendida, entonces se anade a la TRFALSE
+                                {
+                                    lstTempFalse.Add(lstInstruccionActual);
+                                    dgvFalse.Rows.Add(dgvFalse.Rows.Count, "----", strTipo, "----");
+                                    dgvFalse.Rows.Add(dgvFalse.Rows.Count, string.Join(" ", lstInstruccionActual.Skip(1)), "Leer del teclado", "OPR5");
+                                }
+                                blnPermitido = false;
+                            }
+                        }
+                        if (blnPermitido)
+                        {
+                            dgvTripleta.Rows.Add(dgvTripleta.Rows.Count, "----", strTipo, "----");
+                            dgvTripleta.Rows.Add(dgvTripleta.Rows.Count, string.Join(" ", lstInstruccionActual.Skip(1)), "Leer del teclado", "OPR5");
+                        }
+                        blnPermitido = true;
+                        break;
+                    }
+                    else if (strTipo.Contains("IMPRIMIR"))
+                    {
+                        foreach (KeyValuePair<string, string> rangos in dctRangosNoPermitidos)
+                        {
+                            if ((dctPosicionInstruccion[strTipo] >= int.Parse(rangos.Value.Split(' ')[0]) && (dctPosicionInstruccion[strTipo] <= int.Parse(rangos.Value.Split(' ')[1]))))
+                            {
+                                if (rangos.Key.Contains("TRLOOP"))  //Si la bandera blnTRLOOP esta encendida, entonces se anade a la TRLOOP
+                                {
+                                    lstTempLoop.Add(lstInstruccionActual);
+                                    dgvLoop.Rows.Add(dgvLoop.Rows.Count, "----", strTipo, "----");
+                                    dgvLoop.Rows.Add(dgvLoop.Rows.Count, "", string.Join(" ", lstInstruccionActual.Skip(1)), "PR05");
+                                }
+                                else if (rangos.Key.Contains("TRTRUE"))  //Si la bandera blnTRTRUE esta encendida, entonces se anade a la TRTRUE
+                                {
+                                    lstTempTrue.Add(lstInstruccionActual);
+                                    dgvTrue.Rows.Add(dgvTrue.Rows.Count, "----", strTipo, "----");
+                                    dgvTrue.Rows.Add(dgvTrue.Rows.Count, "", string.Join(" ", lstInstruccionActual.Skip(1)), "PR05");
+                                }
+                                else  //Si la bandera blnTRFALSE esta encendida, entonces se anade a la TRFALSE
+                                {
+                                    lstTempFalse.Add(lstInstruccionActual);
+                                    dgvFalse.Rows.Add(dgvFalse.Rows.Count, "----", strTipo, "----");
+                                    dgvFalse.Rows.Add(dgvFalse.Rows.Count, "", string.Join(" ", lstInstruccionActual.Skip(1)), "PR05");
+                                }
+                                blnPermitido = false;
+                            }
+                        }
+                        if (blnPermitido)
+                        {
+                            dgvTripleta.Rows.Add(dgvTripleta.Rows.Count, "----", strTipo, "----");
+                            dgvTripleta.Rows.Add(dgvTripleta.Rows.Count, "", string.Join(" ", lstInstruccionActual.Skip(1)), "PR05");
+                        }
+                        blnPermitido = true;
+                        break;
+                    }
+                    else if (strTipo.Contains("EMPIEZA"))
+                    {
+                        foreach (KeyValuePair<string, string> rangos in dctRangosNoPermitidos)
+                        {
+                            if ((dctPosicionInstruccion[strTipo] > int.Parse(rangos.Value.Split(' ')[0]) && (dctPosicionInstruccion[strTipo] < int.Parse(rangos.Value.Split(' ')[1]))))
+                            {
+                                if (rangos.Key.Contains("TRLOOP"))  //Si la bandera blnTRLOOP esta encendida, entonces se anade a la TRLOOP
+                                {
+                                    lstTempLoop.Add(lstInstruccionActual);
+                                    dgvLoop.Rows.Add(dgvLoop.Rows.Count, "----", strTipo, "----");
+                                    dgvLoop.Rows.Add(dgvLoop.Rows.Count, lstInstruccionActual[1], lstInstruccionActual[2], lstInstruccionActual[3]);
+                                    dgvLoop.Rows.Add(dgvLoop.Rows.Count, lstInstruccionActual[5], lstInstruccionActual[6], lstInstruccionActual[7]);
+                                    dgvLoop.Rows.Add(dgvLoop.Rows.Count, "SALTO", "true", dgvLoop.Rows.Count + 5);
+                                    dgvLoop.Rows.Add(dgvLoop.Rows.Count, "SALTO", "false", dgvLoop.Rows.Count + 1);
+                                    dgvLoop.Rows.Add(dgvLoop.Rows.Count, "SALTO", "TRLOOP" + strTipo.Substring(7), "");
+                                    dgvLoop.Rows.Add(dgvLoop.Rows.Count, lstInstruccionActual[1], 1, "OPA1");
+                                    dgvLoop.Rows.Add(dgvLoop.Rows.Count, "SALTO", "", dgvLoop.Rows.Count - 5);
+                                    dgvLoop.Rows.Add(dgvLoop.Rows.Count, "FIN", "", "");
+                                }
+                                else if (rangos.Key.Contains("TRTRUE"))  //Si la bandera blnTRTRUE esta encendida, entonces se anade a la TRTRUE
+                                {
+                                    lstTempTrue.Add(lstInstruccionActual);
+                                    dgvTrue.Rows.Add(dgvTrue.Rows.Count, "----", strTipo, "----");
+                                    dgvTrue.Rows.Add(dgvTrue.Rows.Count, lstInstruccionActual[1], lstInstruccionActual[2], lstInstruccionActual[3]);
+                                    dgvTrue.Rows.Add(dgvTrue.Rows.Count, lstInstruccionActual[5], lstInstruccionActual[6], lstInstruccionActual[7]);
+                                    dgvTrue.Rows.Add(dgvTrue.Rows.Count, "SALTO", "true", dgvTrue.Rows.Count + 5);
+                                    dgvTrue.Rows.Add(dgvTrue.Rows.Count, "SALTO", "false", dgvTrue.Rows.Count + 1);
+                                    dgvTrue.Rows.Add(dgvTrue.Rows.Count, "SALTO", "TRLOOP" + strTipo.Substring(7), "");
+                                    dgvTrue.Rows.Add(dgvTrue.Rows.Count, lstInstruccionActual[1], 1, "OPA1");
+                                    dgvTrue.Rows.Add(dgvTrue.Rows.Count, "SALTO", "", dgvTrue.Rows.Count - 5);
+                                    dgvTrue.Rows.Add(dgvTrue.Rows.Count, "FIN", "", "");
+                                }
+                                else  //Si la bandera blnTRFALSE esta encendida, entonces se anade a la TRFALSE
+                                {
+                                    lstTempFalse.Add(lstInstruccionActual);
+                                    dgvFalse.Rows.Add(dgvFalse.Rows.Count, "----", strTipo, "----");
+                                    dgvFalse.Rows.Add(dgvFalse.Rows.Count, lstInstruccionActual[1], lstInstruccionActual[2], lstInstruccionActual[3]);
+                                    dgvFalse.Rows.Add(dgvFalse.Rows.Count, lstInstruccionActual[5], lstInstruccionActual[6], lstInstruccionActual[7]);
+                                    dgvFalse.Rows.Add(dgvFalse.Rows.Count, "SALTO", "true", dgvFalse.Rows.Count + 5);
+                                    dgvFalse.Rows.Add(dgvFalse.Rows.Count, "SALTO", "false", dgvFalse.Rows.Count + 1);
+                                    dgvFalse.Rows.Add(dgvFalse.Rows.Count, "SALTO", "TRLOOP" + strTipo.Substring(7), "");
+                                    dgvFalse.Rows.Add(dgvFalse.Rows.Count, lstInstruccionActual[1], 1, "OPA1");
+                                    dgvFalse.Rows.Add(dgvFalse.Rows.Count, "SALTO", "", dgvFalse.Rows.Count - 5);
+                                    dgvFalse.Rows.Add(dgvFalse.Rows.Count, "FIN", "", "");
+                                }
+                                blnPermitido = false;
+                            }
+                        }
+                        if (blnPermitido)
+                        {
+                            dgvTripleta.Rows.Add(dgvTripleta.Rows.Count, "----", strTipo, "----");
+                            dgvTripleta.Rows.Add(dgvTripleta.Rows.Count, lstInstruccionActual[1], lstInstruccionActual[2], lstInstruccionActual[3]);
+                            dgvTripleta.Rows.Add(dgvTripleta.Rows.Count, lstInstruccionActual[5], lstInstruccionActual[6], lstInstruccionActual[7]);
+                            dgvTripleta.Rows.Add(dgvTripleta.Rows.Count, "SALTO", "true", dgvTripleta.Rows.Count + 5);
+                            dgvTripleta.Rows.Add(dgvTripleta.Rows.Count, "SALTO", "false", dgvTripleta.Rows.Count + 1);
+                            dgvTripleta.Rows.Add(dgvTripleta.Rows.Count, "SALTO", "TRLOOP" + strTipo.Substring(7), "");
+                            dgvTripleta.Rows.Add(dgvTripleta.Rows.Count, lstInstruccionActual[1], 1, "OPA1");
+                            dgvTripleta.Rows.Add(dgvTripleta.Rows.Count, "SALTO", "", dgvTripleta.Rows.Count - 5);
+                            dgvTripleta.Rows.Add(dgvTripleta.Rows.Count, "FIN", "", "");
+                        }
+                        blnPermitido = true;
+                        break;
+                    }
+                    else if (strTipo.Contains("ASIGOPAR"))
+                    {
+                        switch (lstInstruccionActual[j])
+                        {
+                            case "OPA1": // +
+                            case "OPA2": // -
+                            case "OPA3": // *
+                            case "OPA4": // /
+                            case "OPA5": // ^
+                            case "OPR5": // =
+                                string strAnterior = lstInstruccionActual[j - 1];                                                              //Se guarda el operando anterior
+                                string strAnteriorAnterior = lstInstruccionActual[j - 2];                                                      //Se guarda el operando ant anterior (el que recibe los cambios)
+                                string strOperando = lstInstruccionActual[j];
 
+                                foreach (KeyValuePair<string, string> rangos in dctRangosNoPermitidos)
+                                {
+                                    if ((dctPosicionInstruccion[strTipo] >= int.Parse(rangos.Value.Split(' ')[0]) && (dctPosicionInstruccion[strTipo] <= int.Parse(rangos.Value.Split(' ')[1]))))
+                                    {
+                                        if (rangos.Key.Contains("TRLOOP"))  //Si la bandera blnTRLOOP esta encendida, entonces se anade a la TRLOOP
+                                        {
+                                            lstTempLoop.Add(lstInstruccionActual);
+                                            dgvLoop.Rows.Add(dgvLoop.Rows.Count, "----", strTipo, "----");
+                                            dgvLoop.Rows.Add(dgvLoop.Rows.Count, strAnteriorAnterior, strAnterior, strOperando);
+                                        }
+                                        else if (rangos.Key.Contains("TRTRUE"))  //Si la bandera blnTRTRUE esta encendida, entonces se anade a la TRTRUE
+                                        {
+                                            lstTempTrue.Add(lstInstruccionActual);
+                                            dgvTrue.Rows.Add(dgvTrue.Rows.Count, "----", strTipo, "----");
+                                            dgvTrue.Rows.Add(dgvTrue.Rows.Count, strAnteriorAnterior, strAnterior, strOperando);
+                                        }
+                                        else  //Si la bandera blnTRFALSE esta encendida, entonces se anade a la TRFALSE
+                                        {
+                                            lstTempFalse.Add(lstInstruccionActual);
+                                            dgvFalse.Rows.Add(dgvFalse.Rows.Count, "----", strTipo, "----");
+                                            dgvFalse.Rows.Add(dgvFalse.Rows.Count, strAnteriorAnterior, strAnterior, strOperando);
+                                        }
+                                        blnPermitido = false;
+                                    }
+                                }
+                                if (blnPermitido)
+                                {
+                                    dgvTripleta.Rows.Add(dgvTripleta.Rows.Count, "----", strTipo, "----");
+                                    dgvTripleta.Rows.Add(dgvTripleta.Rows.Count, "", string.Join(" ", lstInstruccionActual.Skip(1)), "PR05");
+                                }
+                                blnPermitido = true;
+                                lstInstruccionActual.Remove(strAnterior);
+                                lstInstruccionActual.Remove(strOperando);
+                                j = -1;
+                                break;
+                        }
+                    }
+                    else if (strTipo.Contains("ASIG"))
+                    {
+                        foreach (KeyValuePair<string, string> rangos in dctRangosNoPermitidos)
+                        {
+                            if ((dctPosicionInstruccion[strTipo] >= int.Parse(rangos.Value.Split(' ')[0]) && (dctPosicionInstruccion[strTipo] <= int.Parse(rangos.Value.Split(' ')[1]))))
+                            {
+                                if (rangos.Key.Contains("TRLOOP"))  //Si la bandera blnTRLOOP esta encendida, entonces se anade a la TRLOOP
+                                {
+                                    lstTempLoop.Add(lstInstruccionActual);
+                                    dgvLoop.Rows.Add(dgvLoop.Rows.Count, "----", strTipo, "----");
+                                    dgvLoop.Rows.Add(dgvLoop.Rows.Count, lstInstruccionActual[0], string.Join(" ", lstInstruccionActual.Skip(1).Take(1)), "OPR5");
+                                }
+                                else if (rangos.Key.Contains("TRTRUE"))  //Si la bandera blnTRTRUE esta encendida, entonces se anade a la TRTRUE
+                                {
+                                    lstTempTrue.Add(lstInstruccionActual);
+                                    dgvTrue.Rows.Add(dgvTrue.Rows.Count, "----", strTipo, "----");
+                                    dgvTrue.Rows.Add(dgvTrue.Rows.Count, lstInstruccionActual[0], string.Join(" ", lstInstruccionActual.Skip(1).Take(1)), "OPR5");
+                                }
+                                else  //Si la bandera blnTRFALSE esta encendida, entonces se anade a la TRFALSE
+                                {
+                                    lstTempFalse.Add(lstInstruccionActual);
+                                    dgvFalse.Rows.Add(dgvFalse.Rows.Count, "----", strTipo, "----");
+                                    dgvFalse.Rows.Add(dgvFalse.Rows.Count, lstInstruccionActual[0], string.Join(" ", lstInstruccionActual.Skip(1).Take(1)), "OPR5");
+                                }
+                                blnPermitido = false;
+                            }
+                        }
+                        if (blnPermitido)
+                        {
+                            dgvTripleta.Rows.Add(dgvTripleta.Rows.Count, "----", strTipo, "----");
+                            dgvTripleta.Rows.Add(dgvTripleta.Rows.Count, "", string.Join(" ", lstInstruccionActual.Skip(1)), "PR05");
+                        }
+                        blnPermitido = true;
+                        break;
+                    }
+                    else if (strTipo.Contains("SI"))
+                    {
+                        foreach (KeyValuePair<string, string> rangos in dctRangosNoPermitidos)
+                        {
+                            if ((dctPosicionInstruccion[strTipo] > int.Parse(rangos.Value.Split(' ')[0]) && (dctPosicionInstruccion[strTipo] < int.Parse(rangos.Value.Split(' ')[1]))))
+                            {
+                                if (rangos.Key.Contains("TRLOOP"))  //Si la bandera blnTRLOOP esta encendida, entonces se anade a la TRLOOP
+                                {
+                                    lstTempLoop.Add(lstInstruccionActual);
+                                    if (!(lstInstruccionActual.Contains("OPL1") || lstInstruccionActual.Contains("OPL2") || lstInstruccionActual.Contains("OPL3")))
+                                    {
+                                        dgvLoop.Rows.Add(dgvLoop.Rows.Count, "----", strTipo, "----");
+                                        if (!lstInstruccionActual.Contains("CES1"))
+                                        {
+                                            dgvLoop.Rows.Add(dgvLoop.Rows.Count, lstInstruccionActual[1], lstInstruccionActual[2], lstInstruccionActual[3]);
+                                        }
+                                        else
+                                        {
+                                            dgvLoop.Rows.Add(dgvLoop.Rows.Count, lstInstruccionActual[2], lstInstruccionActual[3], lstInstruccionActual[4]);
+                                        }
+                                        dgvLoop.Rows.Add(dgvLoop.Rows.Count, "SALTO", "true", dgvLoop.Rows.Count + 2);
+                                        dgvLoop.Rows.Add(dgvLoop.Rows.Count, "SALTO", "false", dgvLoop.Rows.Count + 3);
+                                        dgvLoop.Rows.Add(dgvLoop.Rows.Count, "SALTO", "TRTRUE" + strTipo.Substring(2), "");
+                                        dgvLoop.Rows.Add(dgvLoop.Rows.Count, "SALTO", "", dgvLoop.Rows.Count + 2);
+                                        dgvLoop.Rows.Add(dgvLoop.Rows.Count, "SALTO", "TRFALSE" + strTipo.Substring(2), "");
+                                        dgvLoop.Rows.Add(dgvLoop.Rows.Count, "FIN", "", "");
+                                    }
+                                }
+                                else if (rangos.Key.Contains("TRTRUE"))  //Si la bandera blnTRTRUE esta encendida, entonces se anade a la TRTRUE
+                                {
+                                    lstTempTrue.Add(lstInstruccionActual);
+                                    if (!(lstInstruccionActual.Contains("OPL1") || lstInstruccionActual.Contains("OPL2") || lstInstruccionActual.Contains("OPL3")))
+                                    {
+                                        dgvTrue.Rows.Add(dgvTrue.Rows.Count, "----", strTipo, "----");
+                                        if (!lstInstruccionActual.Contains("CES1"))
+                                        {
+                                            dgvTrue.Rows.Add(dgvTrue.Rows.Count, lstInstruccionActual[1], lstInstruccionActual[2], lstInstruccionActual[3]);
+                                        }
+                                        else
+                                        {
+                                            dgvTrue.Rows.Add(dgvTrue.Rows.Count, lstInstruccionActual[2], lstInstruccionActual[3], lstInstruccionActual[4]);
+                                        }
+                                        dgvTrue.Rows.Add(dgvTrue.Rows.Count, "SALTO", "true", dgvTrue.Rows.Count + 2);
+                                        dgvTrue.Rows.Add(dgvTrue.Rows.Count, "SALTO", "false", dgvTrue.Rows.Count + 3);
+                                        dgvTrue.Rows.Add(dgvTrue.Rows.Count, "SALTO", "TRTRUE" + strTipo.Substring(2), "");
+                                        dgvTrue.Rows.Add(dgvTrue.Rows.Count, "SALTO", "", dgvTrue.Rows.Count + 2);
+                                        dgvTrue.Rows.Add(dgvTrue.Rows.Count, "SALTO", "TRFALSE" + strTipo.Substring(2), "");
+                                        dgvTrue.Rows.Add(dgvTrue.Rows.Count, "FIN", "", "");
+                                    }
+                                }
+                                else  //Si la bandera blnTRFALSE esta encendida, entonces se anade a la TRFALSE
+                                {
+                                    lstTempFalse.Add(lstInstruccionActual);
+                                    if (!(lstInstruccionActual.Contains("OPL1") || lstInstruccionActual.Contains("OPL2") || lstInstruccionActual.Contains("OPL3")))
+                                    {
+                                        dgvFalse.Rows.Add(dgvFalse.Rows.Count, "----", strTipo, "----");
+                                        if (!lstInstruccionActual.Contains("CES1"))
+                                        {
+                                            dgvFalse.Rows.Add(dgvFalse.Rows.Count, lstInstruccionActual[1], lstInstruccionActual[2], lstInstruccionActual[3]);
+                                        }
+                                        else
+                                        {
+                                            dgvFalse.Rows.Add(dgvFalse.Rows.Count, lstInstruccionActual[2], lstInstruccionActual[3], lstInstruccionActual[4]);
+                                        }
+                                        dgvFalse.Rows.Add(dgvFalse.Rows.Count, "SALTO", "true", dgvFalse.Rows.Count + 2);
+                                        dgvFalse.Rows.Add(dgvFalse.Rows.Count, "SALTO", "false", dgvFalse.Rows.Count + 3);
+                                        dgvFalse.Rows.Add(dgvFalse.Rows.Count, "SALTO", "TRTRUE" + strTipo.Substring(2), "");
+                                        dgvFalse.Rows.Add(dgvFalse.Rows.Count, "SALTO", "", dgvFalse.Rows.Count + 2);
+                                        dgvFalse.Rows.Add(dgvFalse.Rows.Count, "SALTO", "TRFALSE" + strTipo.Substring(2), "");
+                                        dgvFalse.Rows.Add(dgvFalse.Rows.Count, "FIN", "", "");
+                                    }
+                                }
+                                blnPermitido = false;
+                            }
+                        }
+                        if (blnPermitido)
+                        {
+                            if (!(lstInstruccionActual.Contains("OPL1") || lstInstruccionActual.Contains("OPL2") || lstInstruccionActual.Contains("OPL3")))
+                            {
+                                dgvTripleta.Rows.Add(dgvTripleta.Rows.Count, "----", strTipo, "----");
+                                if (!lstInstruccionActual.Contains("CES1"))
+                                {
+                                    dgvTripleta.Rows.Add(dgvTripleta.Rows.Count, lstInstruccionActual[1], lstInstruccionActual[2], lstInstruccionActual[3]);
+                                }
+                                else
+                                {
+                                    dgvTripleta.Rows.Add(dgvTripleta.Rows.Count, lstInstruccionActual[2], lstInstruccionActual[3], lstInstruccionActual[4]);
+                                }
+                                dgvTripleta.Rows.Add(dgvTripleta.Rows.Count, "SALTO", "true", dgvTripleta.Rows.Count + 2);
+                                dgvTripleta.Rows.Add(dgvTripleta.Rows.Count, "SALTO", "false", dgvTripleta.Rows.Count + 3);
+                                dgvTripleta.Rows.Add(dgvTripleta.Rows.Count, "SALTO", "TRTRUE" + strTipo.Substring(2), "");
+                                dgvTripleta.Rows.Add(dgvTripleta.Rows.Count, "SALTO", "", dgvTripleta.Rows.Count + 2);
+                                dgvTripleta.Rows.Add(dgvTripleta.Rows.Count, "SALTO", "TRFALSE" + strTipo.Substring(2), "");
+                                dgvTripleta.Rows.Add(dgvTripleta.Rows.Count, "FIN", "", "");
+                            }
+                        }
+                        blnPermitido = true;
+                        break;
+                    }
                 }
-                else if (strOperacion.Contains("SI"))
-                {
-                }
-                else if (strOperacion.Contains("CONCAT"))
-                {
-
-                }
-            }
-            foreach (Identificador identificador in misIden)
-            {
-                MessageBox.Show(identificador.Token + ", " + identificador.Nombre + ", " + identificador.Contenido);
             }
         }
 
-        public void SwitchEvalOP(List<string> lineaActual)
+        public void AgregarListaInstruccionActual(string linea, string tipo)
         {
-            string strTokenActual = "";
-            string strTokenAnterior = "";
-            for (int i = 0; i < misIden.Count(); i++)
+            foreach (string tokenActual in linea.Split(' '))
             {
-                if (lineaActual[1].Contains(misIden[i].Token))
+                if (tokenActual != " " && tokenActual != "")
                 {
-                    for (int j = 2; j < lineaActual.Count(); j++)
-                    {
-                        strTokenActual = lineaActual[j].Replace(" ", "");
-                        strTokenAnterior = lineaActual[j - 1].Replace(" ", "");
-                        switch (strTokenActual)
-                        {
-                            case "OPA1":
-                                if (strTokenAnterior.Contains("IDE"))
-                                {
-                                    foreach (Identificador identificador in misIden)
-                                    {
-                                        if (strTokenAnterior.Contains(identificador.Token))
-                                        {
-                                            if (identificador.Tipo.Equals("Entero"))
-                                            {
-                                                misIden[i].Contenido = (int.Parse(misIden[i].Contenido.Split(' ')[0]) + int.Parse(identificador.Contenido)).ToString();
-                                            }
-                                            else
-                                            {
-                                                misIden[i].Contenido += identificador.Contenido;
-                                            }
-                                            dgvTripleta.Rows.Add(misIden[i].Token, identificador.Token, "OPA1");
-                                        }
-                                    }
-                                }
-                                else if (strTokenAnterior.Contains("CNU"))
-                                {
-                                    foreach (KeyValuePair<string, int> constnum in listaConstantesNumerica)
-                                    {
-                                        if (strTokenAnterior.Contains(constnum.Key))
-                                        {
-                                            misIden[i].Contenido = (int.Parse(misIden[i].Contenido.Split(' ')[0]) + constnum.Value).ToString();
-                                            dgvTripleta.Rows.Add(misIden[i].Token, constnum.Key, "OPA1");
-                                        }
-                                    }
-                                }
-                                else if (strTokenAnterior.Contains("CADE"))
-                                {
-                                    foreach (KeyValuePair<string, string> cadena in listaCadenas)
-                                    {
-                                        if (strTokenAnterior.Contains(cadena.Key))
-                                        {
-                                            misIden[i].Contenido += cadena.Value;
-                                            dgvTripleta.Rows.Add(misIden[i].Token, cadena.Key, "OPA1");
-                                        }
-                                    }
-                                }
-                                break;
-                            case "OPA2":
-                                if (strTokenAnterior.Contains("IDE"))
-                                {
-                                    foreach (Identificador identificador in misIden)
-                                    {
-                                        if (strTokenAnterior.Contains(identificador.Token))
-                                        {
-                                            if (identificador.Tipo.Equals("Entero"))
-                                            {
-                                                misIden[i].Contenido = (int.Parse(misIden[i].Contenido.Split(' ')[0]) - int.Parse(identificador.Contenido)).ToString();
-                                                dgvTripleta.Rows.Add(misIden[i].Token, identificador.Token, "OPA2");
-                                            }
-                                        }
-                                    }
-                                }
-                                else if (strTokenAnterior.Contains("CNU"))
-                                {
-                                    foreach (KeyValuePair<string, int> constnum in listaConstantesNumerica)
-                                    {
-                                        if (strTokenAnterior.Contains(constnum.Key))
-                                        {
-                                            misIden[i].Contenido = (int.Parse(misIden[i].Contenido.Split(' ')[0]) - constnum.Value).ToString();
-                                            dgvTripleta.Rows.Add(misIden[i].Token, constnum.Key, "OPA2");
-                                        }
-                                    }
-                                }
-                                break;
-                            case "OPA3":
-                                if (strTokenAnterior.Contains("IDE"))
-                                {
-                                    foreach (Identificador identificador in misIden)
-                                    {
-                                        if (strTokenAnterior.Contains(identificador.Token))
-                                        {
-                                            if (identificador.Tipo.Equals("Entero"))
-                                            {
-                                                misIden[i].Contenido = (int.Parse(misIden[i].Contenido.Split(' ')[0]) * int.Parse(identificador.Contenido)).ToString();
-                                                dgvTripleta.Rows.Add(misIden[i].Token, identificador.Token, "OPA3");
-                                            }
-                                        }
-                                    }
-                                }
-                                else if (strTokenAnterior.Contains("CNU"))
-                                {
-                                    foreach (KeyValuePair<string, int> constnum in listaConstantesNumerica)
-                                    {
-                                        if (strTokenAnterior.Contains(constnum.Key))
-                                        {
-                                            misIden[i].Contenido = (int.Parse(misIden[i].Contenido.Split(' ')[0]) * constnum.Value).ToString();
-                                            dgvTripleta.Rows.Add(misIden[i].Token, constnum.Key, "OPA3");
-                                        }
-                                    }
-                                }
-                                break;
-                            case "OPA4":
-                                if (strTokenAnterior.Contains("IDE"))
-                                {
-                                    foreach (Identificador identificador in misIden)
-                                    {
-                                        if (strTokenAnterior.Contains(identificador.Token))
-                                        {
-                                            if (identificador.Tipo.Equals("Entero"))
-                                            {
-                                                misIden[i].Contenido = (int.Parse(misIden[i].Contenido.Split(' ')[0]) / int.Parse(identificador.Contenido)).ToString();
-                                                dgvTripleta.Rows.Add(misIden[i].Token, identificador.Token, "OPA4");
-                                            }
-                                        }
-                                    }
-                                }
-                                else if (strTokenAnterior.Contains("CNU"))
-                                {
-                                    foreach (KeyValuePair<string, int> constnum in listaConstantesNumerica)
-                                    {
-                                        if (strTokenAnterior.Contains(constnum.Key))
-                                        {
-                                            misIden[i].Contenido = (int.Parse(misIden[i].Contenido.Split(' ')[0]) / constnum.Value).ToString();
-                                            dgvTripleta.Rows.Add(misIden[i].Token, constnum.Key, "OPA4");
-                                        }
-                                    }
-                                }
-                                break;
-                            case "OPA5":
-                                if (strTokenAnterior.Contains("IDE"))
-                                {
-                                    foreach (Identificador identificador in misIden)
-                                    {
-                                        if (strTokenAnterior.Contains(identificador.Token))
-                                        {
-                                            if (identificador.Tipo.Equals("Entero"))
-                                            {
-                                                misIden[i].Contenido = (int.Parse(misIden[i].Contenido.Split(' ')[0]) ^ int.Parse(identificador.Contenido)).ToString();
-                                                dgvTripleta.Rows.Add(misIden[i].Token, identificador.Token, "OPA5");
-                                            }
-                                        }
-                                    }
-                                }
-                                else if (strTokenAnterior.Contains("CNU"))
-                                {
-                                    foreach (KeyValuePair<string, int> constnum in listaConstantesNumerica)
-                                    {
-                                        if (strTokenAnterior.Contains(constnum.Key))
-                                        {
-                                            misIden[i].Contenido = (int.Parse(misIden[i].Contenido.Split(' ')[0]) ^ constnum.Value).ToString();
-                                            dgvTripleta.Rows.Add(misIden[i].Token, constnum.Key, "OPA5");
-                                        }
-                                    }
-                                }
-                                break;
-                            case "OPR5":
-                                if (strTokenAnterior.Contains("IDE"))
-                                {
-                                    foreach (Identificador identificador in misIden)
-                                    {
-                                        if (strTokenAnterior.Contains(identificador.Token))
-                                        {
-                                            misIden[i].Contenido = identificador.Contenido.Substring(identificador.Contenido.IndexOf('['));
-                                            dgvTripleta.Rows.Add(misIden[i].Token, identificador.Token, "OPR5");
-                                        }
-                                    }
-                                }
-                                else if (strTokenAnterior.Contains("CNU"))
-                                {
-                                    foreach (KeyValuePair<string, int> constnum in listaConstantesNumerica)
-                                    {
-                                        if (strTokenAnterior.Contains(constnum.Key))
-                                        {
-                                            misIden[i].Contenido = constnum.Value.ToString();
-                                            dgvTripleta.Rows.Add(misIden[i].Token, constnum.Key, "OPR5");
-                                        }
-                                    }
-                                }
-                                else if (strTokenAnterior.Contains("CADE"))
-                                {
-                                    foreach (KeyValuePair<string, string> cadena in listaCadenas)
-                                    {
-                                        if (strTokenAnterior.Contains(cadena.Key))
-                                        {
-                                            misIden[i].Contenido = cadena.Value;
-                                            dgvTripleta.Rows.Add(misIden[i].Token, cadena.Key, "OPR5");
-                                        }
-                                    }
-                                }
-                                break;
-                        }
-                    }
-                    break;
+                    lstInstruccionActual.Add(tokenActual);
+                }
+            }
+            dctTripleta.Add(tipo, lstInstruccionActual);
+            lstInstruccionActual = new List<string>();
+        }
+
+        public void DetectarInstruccion(string strToken, string strLinea, int intLinea)
+        {
+            bool blnHalladoLocal = false;
+            blnHalladoGlobal = false;
+            string strTipoInstr = "";
+            if (strToken != "" && strToken != " ") //evitamos iteraciones innecesarias
+            {
+                switch (strToken)
+                {
+                    case "PR03": // MOSTRAR
+                        strTipoInstr = "MOSTRAR" + dctContadorTripleta["MOSTRAR"];
+                        dctContadorTripleta["MOSTRAR"]++;
+                        blnHalladoLocal = true;
+                        break;
+
+                    case "PR04": // CAPTURAR
+                        strTipoInstr = "CAPTURAR" + dctContadorTripleta["CAPTURAR"];
+                        dctContadorTripleta["CAPTURAR"]++;
+                        blnHalladoLocal = true;
+                        break;
+
+                    case "PR05": // IMPRIMIR
+                        strTipoInstr = "IMPRIMIR" + dctContadorTripleta["IMPRIMIR"];
+                        dctContadorTripleta["IMPRIMIR"]++;
+                        blnHalladoLocal = true;
+                        break;
+
+                    case "PR10": // EMPIEZA
+                        strTipoInstr = "EMPIEZA" + dctContadorTripleta["EMPIEZA"];
+                        dctContadorTripleta["EMPIEZA"]++;
+                        blnHalladoLocal = true;
+                        break;
+
+                    case "OPA1": // +
+                    case "OPA2": // -
+                    case "OPA3": // *
+                    case "OPA4": // /
+                    case "OPA5": // ^
+                        strTipoInstr = "ASIGOPAR" + dctContadorTripleta["ASIGOPAR"];
+                        dctContadorTripleta["ASIGOPAR"]++;
+                        blnHalladoLocal = true;
+                        break;
+
+                    case "PR06": // SI
+                        strTipoInstr = "SI" + dctContadorTripleta["SI"];
+                        dctContadorTripleta["SI"]++;
+                        blnHalladoLocal = true;
+                        break;
+                }
+                if (strLinea.Split(' ')[0].Contains("IDE") && !strLinea.Contains("OPA"))
+                {
+                    strTipoInstr = "ASIG" + dctContadorTripleta["ASIG"];
+                    dctContadorTripleta["ASIG"]++;
+                    blnHalladoLocal = true;
+                }
+                if (blnHalladoLocal)
+                {
+                    AgregarListaInstruccionActual(strLinea, strTipoInstr);
+                    dctPosicionInstruccion.Add(strTipoInstr, intLinea);
+                    blnHalladoGlobal = true;
                 }
             }
         }
@@ -1290,7 +1508,7 @@ namespace PrinterLanguage
                             case "OPL3":
                                 if (regArg8.IsMatch(listaLineas[i].Split(' ')[j - 1]) && regArg8.IsMatch(listaLineas[i].Split(' ')[j + 1])) //si lo anterior y lo siguiente es un arg8
                                 {
-                                    strPostfijo += listaLineas[i].Split(' ')[j - 2]; //se le agrega el ces1
+                                    strPostfijo += (!listaLineas[i].Split(' ')[j - 2].Contains("PR11") ? listaLineas[i].Split(' ')[j - 2] : ""); //se le agrega el ces1
                                     strPostfijo += listaLineas[i].Split(' ')[j - 1]; //se le agrega el arg8
                                     strPostfijo += listaLineas[i].Split(' ')[j];     //se le agrega el opr / opl
                                     strPostfijo += listaLineas[i].Split(' ')[j + 1]; //se le agrega el arg8
@@ -1315,7 +1533,7 @@ namespace PrinterLanguage
 
                             default:
                                 //MessageBox.Show(listaLineas[i].Split(' ')[j]);
-                                if (!listaLineas[i].Split(' ')[j].Contains("IDE") && !listaLineas[i].Split(' ')[j].Contains("CES1") && !listaLineas[i].Split(' ')[j].Contains("CES2"))
+                                if (!listaLineas[i].Split(' ')[j].Contains("IDE") && !listaLineas[i].Split(' ')[j].Contains("CES1") && !listaLineas[i].Split(' ')[j].Contains("CES2") && !listaLineas[i].Split(' ')[j].Contains("CNU") && !listaLineas[i].Split(' ')[j].Contains("CADE"))
                                 {
                                     strAux += listaLineas[i].Split(' ')[j] + " ";
                                 }
@@ -1352,7 +1570,7 @@ namespace PrinterLanguage
             for (int i = 0; i < lineasCorregidas.Count(); i++)
             {
                 lineasCorregidas[i] = lineasCorregidas[i].Replace("  ", " ");
-                rtxPostfijo.Text += lineasCorregidas[i]+"\n";
+                rtxPostfijo.Text += lineasCorregidas[i] + "\n";
             }
         }
     }
