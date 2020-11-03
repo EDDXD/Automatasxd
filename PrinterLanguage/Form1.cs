@@ -10,6 +10,8 @@ using System.Windows.Forms;
 using MySql.Data.MySqlClient;
 using System.IO;
 using System.Text.RegularExpressions;
+using Transitions;
+using System.Threading;
 
 namespace PrinterLanguage
 {
@@ -842,10 +844,14 @@ namespace PrinterLanguage
             if (!blnError)
             {
                 RellenarTripleta();
+                //Animar();
             }
             else
             {
                 MessageBox.Show("Existen errores semánticos por resolver.", "No se puede rellenar la tripleta", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                EncenderImpresora();
+                InterrumpirImpresora();
+                ApagarImpresora();
             }
         }
 
@@ -1574,29 +1580,29 @@ namespace PrinterLanguage
         //métodos para animaciones
         public void ImprimirImpresora()
         {
-            hoja.Location = new Point(1455, 42);
+            hoja.Location = new Point(1637, 84);
             btnVerde.Visible = true;
-            label8.Text = "IMPRIMIENDO";
-            label8.Location = new Point(1490, 218);
-            Transition.run(label8, "BackColor", Color.LawnGreen, new TransitionType_Linear(2000));
+            label13.Text = "IMPRIMIENDO";
+            label13.Location = new Point(1686, 256);
+            Transition.run(label13, "BackColor", Color.LawnGreen, new TransitionType_Linear(2000));
             Transition t = new Transition(new TransitionType_EaseInEaseOut(2000));
-            Transition.run(label8, "BackColor", Color.Black, new TransitionType_Linear(2000));
+            Transition.run(label13, "BackColor", Color.Black, new TransitionType_Linear(2000));
             t.add(hoja, "Top", 350);
             t.run();
-            label8.ForeColor = Color.Black;
-            Transition.run(label8, "ForeColor", Color.White, new TransitionType_Linear(2000));
+            label13.ForeColor = Color.Black;
+            Transition.run(label13, "ForeColor", Color.White, new TransitionType_Linear(2000));
         }
 
         public void InterrumpirImpresora()
         {
 
-            label8.BackColor = Color.Black;
-            label8.ForeColor = Color.Black;
-            hoja.Location = new Point(1455, 42);
+            label13.BackColor = Color.Black;
+            label13.ForeColor = Color.Black;
+            hoja.Location = new Point(1637, 84);
             btnAmarillo.Visible = true;
-            label8.Text = "Interrumpida";
-            label8.Location = new Point(1490, 218);
-            Transition.run(label8, "BackColor", Color.Yellow, new TransitionType_Linear(2000));
+            label13.Text = "Interrumpida";
+            label13.Location = new Point(1686, 256);
+            Transition.run(label13, "BackColor", Color.Yellow, new TransitionType_Linear(2000));
             Transition t = new Transition(new TransitionType_EaseInEaseOut(1500));
             t.add(hoja, "Top", 120);
             t.run();
@@ -1607,20 +1613,19 @@ namespace PrinterLanguage
 
         public void ApagarImpresora()
         {
-            label8.ForeColor = Color.White;
+            label13.ForeColor = Color.White;
             btnAmarillo.BackgroundImage = null;
             btnAmarillo.Visible = true;
             btnRojo.BackgroundImage = null;
             btnRojo.Visible = true;
-            label8.Text = "APAGANDO";
-            label8.Location = new Point(1490, 218);
+            label13.Text = "APAGANDO";
+            label13.Location = new Point(1686, 256);
             Transition.run(btnAmarillo, "BackColor", Color.Black, new TransitionType_Linear(2000));
             Transition.run(btnRojo, "BackColor", Color.Black, new TransitionType_Linear(2000));
-            Transition.run(label8, "ForeColor", Color.Black, new TransitionType_Linear(2000));
-            label8.ForeColor = Color.White;
-            label8.BackColor = Color.Black;
+            Transition.run(label13, "ForeColor", Color.Black, new TransitionType_Linear(2000));
+            label13.ForeColor = Color.White;
+            label13.BackColor = Color.Black;
         }
-
 
         public void EncenderImpresora()
         {
@@ -1632,41 +1637,59 @@ namespace PrinterLanguage
             btnVerde.Visible = true;
             btnAmarillo.BackColor = Color.Black;
             btnRojo.BackColor = Color.Black;
-            label8.Text = "ENCENDIENDO";
-            label8.ForeColor = Color.Black;
-            label8.BackColor = Color.Black;
-            label8.Location = new Point(1490, 218);
+            label13.Text = "ENCENDIENDO";
+            label13.ForeColor = Color.Black;
+            label13.BackColor = Color.Black;
+            label13.Location = new Point(1686, 256);
             Transition.run(btnVerde, "BackColor", Color.Green, new TransitionType_Linear(2000));
             Transition.run(btnAmarillo, "BackColor", Color.Yellow, new TransitionType_Linear(2000));
             Transition.run(btnRojo, "BackColor", Color.Red, new TransitionType_Linear(2000));
-            Transition.run(label8, "ForeColor", Color.White, new TransitionType_Linear(2000));
-            label8.ForeColor = Color.White;
+            Transition.run(label13, "ForeColor", Color.White, new TransitionType_Linear(2000));
+            label13.ForeColor = Color.White;
         }
 
         public void EscanearImpresora()
         {
-            hojaEscaner.Location = new Point(1677, 170);
+            hojaEscaner.Location = new Point(1859, 212);
             hojaEscaner.Visible = true;
             btnVerde.Visible = true;
-            label8.Text = "ESCANEANDO";
-            label8.Location = new Point(1490, 218);
-            Transition.run(label8, "BackColor", Color.LawnGreen, new TransitionType_Linear(2000));
+            label13.Text = "ESCANEANDO";
+            label13.Location = new Point(1686, 256);
+            Transition.run(label13, "BackColor", Color.LawnGreen, new TransitionType_Linear(2000));
             Transition t = new Transition(new TransitionType_EaseInEaseOut(3000));
             t.add(hojaEscaner, "Left", 1300);
             t.run();
-            label8.ForeColor = Color.Black;
+            label13.ForeColor = Color.Black;
         }
 
         public void MensajeImpresora(string mensaje)
         {
-            label8.ForeColor = Color.Black;
-            label8.BackColor = Color.Black;
-            hoja.Location = new Point(1455, 42);
+            label13.ForeColor = Color.Black;
+            label13.BackColor = Color.Black;
+            hoja.Location = new Point(1637, 84);
             btnAmarillo.Visible = true;
-            label8.Text = mensaje;
-            label8.Location = new Point(1490, 218);
-            Transition.run(label8, "BackColor", Color.Yellow, new TransitionType_Linear(2000));
+            label13.Text = mensaje;
+            label13.Location = new Point(1686, 256);
+            Transition.run(label13, "BackColor", Color.Yellow, new TransitionType_Linear(2000));
         }
 
+        //public void Animar()
+        //{
+        //    foreach (string linea in rtxtCodigo.Lines)
+        //    {
+        //        if (linea.Contains("INICIO"))
+        //        {
+        //            EncenderImpresora();
+        //        }
+        //        else if (linea.Contains("FIN"))
+        //        {
+        //            ApagarImpresora();
+        //        }
+        //        else if (linea.Contains("MOSTRAR"))
+        //        {
+        //            MensajeImpresora(linea.Substring(7));
+        //        }
+        //    }
+        //}
     }
 }

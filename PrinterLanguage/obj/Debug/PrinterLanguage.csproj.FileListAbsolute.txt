@@ -121,3 +121,5 @@ C:\Users\maroh\OneDrive\Documents\7 A 2020\Lenguajes y Autómatas 2\P1\PrinterLa
 C:\Users\maroh\OneDrive\Documents\7 A 2020\Lenguajes y Autómatas 2\P1\PrinterLanguage\Automatasxd\PrinterLanguage\obj\Debug\Interop.WMPLib.dll
 C:\Users\maroh\OneDrive\Documents\7 A 2020\Lenguajes y Autómatas 2\P1\PrinterLanguage\Automatasxd\PrinterLanguage\obj\Debug\AxInterop.WMPLib.dll
 C:\Users\maroh\OneDrive\Documents\7 A 2020\Lenguajes y Autómatas 2\P1\PrinterLanguage\Automatasxd\PrinterLanguage\obj\Debug\PrinterLanguage.csproj.ResolveComReference.cache
+C:\Users\maroh\OneDrive\Documents\7 A 2020\Lenguajes y Autómatas 2\P1\PrinterLanguage\Automatasxd\PrinterLanguage\bin\Debug\Transitions.dll
+C:\Users\maroh\OneDrive\Documents\7 A 2020\Lenguajes y Autómatas 2\P1\PrinterLanguage\Automatasxd\PrinterLanguage\bin\Debug\Transitions.pdb
