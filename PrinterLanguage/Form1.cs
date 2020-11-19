@@ -17,6 +17,19 @@ namespace PrinterLanguage
 {
     public partial class Form1 : Form
     {
+        public static void WaitSeconds(double nSecs)
+        {
+            string s = "0:00:00:" + nSecs.ToString().Replace(",", ",");
+            TimeSpan ts = TimeSpan.Parse(s);
+            DateTime t1 = DateTime.Now.Add(ts);
+            DateTime t2 = DateTime.Now;
+            while (t2 < t1)
+            {
+                System.Windows.Forms.Application.DoEvents();
+                t2 = DateTime.Now;
+            }
+        }
+
         public Form1()
         {
             InitializeComponent();
@@ -34,6 +47,10 @@ namespace PrinterLanguage
             dgvTrue.Columns[2].Width = 121;
             dgvFalse.Columns[2].Width = 121;
             dgvLoop.Columns[2].Width = 121;
+
+            CheckForIllegalCrossThreadCalls = false;
+
+
         }
 
         static string servidor = "192.185.131.135";
@@ -791,7 +808,13 @@ namespace PrinterLanguage
             MySqlConnection conect = new MySqlConnection(cadenaConexiong);
             string strFirst = "", strSecond = "";
             bool blnBandera = true;
-
+            //Se crea el delegado 
+            ThreadStart delegado = new ThreadStart(EncenderImpresora);
+            //Se creamos la instancia del hilo 
+            Thread hilo = new Thread(delegado);
+            //Inicia el hilo 
+            hilo.Start();
+            hilo.Join();
             List<int> listaErrores = new List<int>();
             int intCortadorCiclo = 0;
 
@@ -843,15 +866,32 @@ namespace PrinterLanguage
             EvaluarInstrCompuestas();
             if (!blnError)
             {
+
                 RellenarTripleta();
-                //Animar();
+                ThreadStart delegadoOFF = new ThreadStart(ApagarImpresora);
+                Thread hiloOFF = new Thread(delegadoOFF);
+                hiloOFF.Start();
+                
+                
+
             }
             else
             {
                 MessageBox.Show("Existen errores semánticos por resolver.", "No se puede rellenar la tripleta", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                EncenderImpresora();
-                InterrumpirImpresora();
-                ApagarImpresora();
+                ThreadStart delegadoI = new ThreadStart(InterrumpirImpresora);
+                Thread hiloI = new Thread(delegadoI);
+                hiloI.Start();
+            }
+            for (int i = 0; i < 4; i++)
+            {
+                //Se crea el delegado 
+                ThreadStart delegadoPrint = new ThreadStart(ImprimirImpresora);
+                //Se creamos la instancia del hilo 
+                Thread hiloPrint = new Thread(delegadoPrint);
+                //Inicia el hilo 
+                hiloPrint.Start();
+                hilo.Join();
+                WaitSeconds(2.0);
             }
         }
 
@@ -1595,7 +1635,6 @@ namespace PrinterLanguage
 
         public void InterrumpirImpresora()
         {
-
             label13.BackColor = Color.Black;
             label13.ForeColor = Color.Black;
             hoja.Location = new Point(1637, 84);
@@ -1629,6 +1668,7 @@ namespace PrinterLanguage
 
         public void EncenderImpresora()
         {
+            
             btnAmarillo.BackgroundImage = null;
             btnAmarillo.Visible = true;
             btnRojo.BackgroundImage = null;
@@ -1673,23 +1713,37 @@ namespace PrinterLanguage
             Transition.run(label13, "BackColor", Color.Yellow, new TransitionType_Linear(2000));
         }
 
-        //public void Animar()
-        //{
-        //    foreach (string linea in rtxtCodigo.Lines)
-        //    {
-        //        if (linea.Contains("INICIO"))
-        //        {
-        //            EncenderImpresora();
-        //        }
-        //        else if (linea.Contains("FIN"))
-        //        {
-        //            ApagarImpresora();
-        //        }
-        //        else if (linea.Contains("MOSTRAR"))
-        //        {
-        //            MensajeImpresora(linea.Substring(7));
-        //        }
-        //    }
-        //}
+        public void Animar()
+        {
+            foreach (string linea in rtxtCodigo.Lines)
+            {
+                if (linea.Contains("INICIO"))
+                {
+                    //Se crea el delegado 
+                    ThreadStart delegado = new ThreadStart(EncenderImpresora);
+                    //Se creamos la instancia del hilo 
+                    Thread hilo = new Thread(delegado);
+                    //Inicia el hilo 
+                    hilo.Start();
+                    hilo.Join();
+                    
+                }
+                else if (linea.Contains("FIN"))
+                {
+                    //Se crea el delegado  
+                    ThreadStart delegado = new ThreadStart(ApagarImpresora);
+                    //Se creamos la instancia del hilo 
+                    Thread hilo = new Thread(delegado);
+                    //Inicia el hilo 
+                    hilo.Start();
+                }
+                else if (linea.Contains("MOSTRAR"))
+                {
+                    MensajeImpresora(linea.Substring(7));
+                }
+            }
+        }
     }
+
 }
+
