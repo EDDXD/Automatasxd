@@ -508,10 +508,13 @@ namespace PrinterLanguage
                                 }
                             }
                         }
-                        listaCadenas.Add("CADE" + intNumCadena, strCadena);
-                        qry = new MySqlCommand("INSERT INTO Cadena (TOKEN, CONTENIDO) VALUES ( 'CADE" + intNumCadena + "', '" + strCadena + "' )", con);
-                        qry.ExecuteNonQuery();
-                        intNumCadena++;
+                        if (!listaCadenas.ContainsValue(strCadena))
+                        {
+                            listaCadenas.Add("CADE" + intNumCadena, strCadena);
+                            qry = new MySqlCommand("INSERT INTO Cadena (TOKEN, CONTENIDO) VALUES ( 'CADE" + intNumCadena + "', '" + strCadena + "' )", con);
+                            qry.ExecuteNonQuery();
+                            intNumCadena++;
+                        }
                     }
                 }
             }
@@ -1418,7 +1421,8 @@ namespace PrinterLanguage
             rtxInfijo.Text = "";
             rtxPostfijo.Text = "";
             string strAux = "";
-            int intContCnue = 0;
+            string strCadeAux = "";
+            int intContCnue = 0, intContCade = 0;
             for (int i = 0; i < rtxttokens.Lines.Count(); i++)
             {
                 if (rtxttokens.Lines[i].Contains("CNUE"))
@@ -1439,6 +1443,47 @@ namespace PrinterLanguage
                                 if (row.Cells["Contenido"].Value.ToString().Equals(rtxtCodigo.Lines[i].Split(' ')[j]))
                                 {
                                     strAux += row.Cells["Token"].Value.ToString() + " ";
+                                    break;
+                                }
+                            }
+                        }
+                        else
+                        {
+                            strAux += rtxttokens.Lines[i].Split(' ')[j] + " ";
+                        }
+                    }
+                }
+                else if (rtxttokens.Lines[i].Contains("CADE"))
+                {
+                    foreach (string item in rtxttokens.Lines[i].Split(' '))
+                    {
+                        if (item.Equals("CADE"))
+                        {
+                            intContCade++;
+                        }
+                    }
+                    for (int j = 0; j < rtxttokens.Lines[i].Split(' ').Count(); j++)
+                    {
+                        if (rtxttokens.Lines[i].Split(' ')[j].Equals("CADE"))
+                        {
+                            for (int k = j; k < rtxtCodigo.Lines[i].Split(' ').Count(); k++)
+                            {
+                                if (rtxtCodigo.Lines[i].Split(' ')[k] != "]")
+                                {
+                                    strCadeAux += rtxtCodigo.Lines[i].Split(' ')[k] + " ";
+                                }
+                                else
+                                {
+                                    strCadeAux += rtxtCodigo.Lines[i].Split(' ')[k];
+                                    break;
+                                }
+                            }
+                            foreach (DataGridViewRow row in dgvCadenas.Rows)
+                            {
+                                if (row.Cells["Contenido"].Value.ToString().Equals(strCadeAux))
+                                {
+                                    strAux += row.Cells["Token"].Value.ToString() + " ";
+                                    strCadeAux = "";
                                     break;
                                 }
                             }
