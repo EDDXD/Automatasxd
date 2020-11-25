@@ -871,8 +871,25 @@ namespace PrinterLanguage
         List<List<string>> lstTempTrue = new List<List<string>>();
         List<List<string>> lstTempFalse = new List<List<string>>();
 
+        public string DetectarMejorRango(string strMejorRango, string strTipo)
+        {
+            foreach (KeyValuePair<string, string> rangos in dctRangosNoPermitidos)
+            {
+                if ((dctPosicionInstruccion[strTipo] > int.Parse(rangos.Value.Split(' ')[0]) && (dctPosicionInstruccion[strTipo] < int.Parse(rangos.Value.Split(' ')[1]))))
+                {
+                    if ((int.Parse(rangos.Value.Split(' ')[0]) > int.Parse(strMejorRango.Split(' ')[1])))
+                    {
+                        strMejorRango = rangos.Key + " " + rangos.Value;
+                    }
+                    blnPermitido = false;
+                }
+            }
+            return strMejorRango;
+        }
+
         bool blnHalladoGlobal = false;
         Dictionary<string, string> dctRangosNoPermitidos = new Dictionary<string, string>();
+        bool blnPermitido = true;
         public void RellenarTripleta()
         {
             dctRangosNoPermitidos = new Dictionary<string, string>();
@@ -882,6 +899,7 @@ namespace PrinterLanguage
             dctTrues = new Dictionary<string, List<List<string>>>();
             dctFalses = new Dictionary<string, List<List<string>>>();
             dctLoops = new Dictionary<string, List<List<string>>>();
+            string strMejorRango = "";
 
             dgvTripleta.Rows.Clear();
 
@@ -940,7 +958,7 @@ namespace PrinterLanguage
                                 //blnTRFALSE = true;
                                 dctTrues.Add("TRTRUE" + dctContadorTripleta["SI"], lstTempTrue);
                                 dctRangosNoPermitidos["TRTRUE" + (dctContadorTripleta["SI"] - 1).ToString()] += " " + i;
-                                dctRangosNoPermitidos.Add("TRFALSE" + (dctContadorTripleta["SI"] - 1).ToString(), (i + 1).ToString());
+                                dctRangosNoPermitidos.Add("TRFALSE" + (dctContadorTripleta["SI"] - 1).ToString(), (i).ToString());
 
                                 lstTempTrue = new List<List<string>>();
                                 dgvFalse.Rows.Add(dgvFalse.Rows.Count, "****", "TRFALSE" + (dctContadorTripleta["SI"] - 1).ToString(), "****");
@@ -971,7 +989,10 @@ namespace PrinterLanguage
             }
             //Aqui se le da estructura a la TRIPLETA
             string strTipo = "";
-            bool blnPermitido = true;
+            if (dctRangosNoPermitidos.Count() > 0)
+            {
+                strMejorRango = dctRangosNoPermitidos.ElementAt(0).Key + " " + dctRangosNoPermitidos.ElementAt(0).Value;
+            }
 
             for (int i = 0; i < dctTripleta.Count(); i++)
             {
@@ -982,32 +1003,30 @@ namespace PrinterLanguage
                 {
                     if (strTipo.Contains("MOSTRAR"))
                     {
-                        foreach (KeyValuePair<string, string> rangos in dctRangosNoPermitidos)
+                        strMejorRango = DetectarMejorRango(strMejorRango, strTipo);
+
+                        if (!blnPermitido)
                         {
-                            if ((dctPosicionInstruccion[strTipo] >= int.Parse(rangos.Value.Split(' ')[0]) && (dctPosicionInstruccion[strTipo] <= int.Parse(rangos.Value.Split(' ')[1]))))
+                            if (strMejorRango.Contains("TRLOOP"))
                             {
-                                if (rangos.Key.Contains("TRLOOP"))
-                                {
-                                    lstTempLoop.Add(lstInstruccionActual);
-                                    dgvLoop.Rows.Add(dgvLoop.Rows.Count, "----", strTipo, "----");
-                                    dgvLoop.Rows.Add(dgvLoop.Rows.Count, "", string.Join(" ", lstInstruccionActual.Skip(1)), "PR03");
-                                }
-                                else if (rangos.Key.Contains("TRTRUE"))
-                                {
-                                    lstTempTrue.Add(lstInstruccionActual);
-                                    dgvTrue.Rows.Add(dgvTrue.Rows.Count, "----", strTipo, "----");
-                                    dgvTrue.Rows.Add(dgvTrue.Rows.Count, "", string.Join(" ", lstInstruccionActual.Skip(1)), "PR03");
-                                }
-                                else
-                                {
-                                    lstTempFalse.Add(lstInstruccionActual);
-                                    dgvFalse.Rows.Add(dgvFalse.Rows.Count, "----", strTipo, "----");
-                                    dgvFalse.Rows.Add(dgvFalse.Rows.Count, "", string.Join(" ", lstInstruccionActual.Skip(1)), "PR03");
-                                }
-                                blnPermitido = false;
+                                lstTempLoop.Add(lstInstruccionActual);
+                                dgvLoop.Rows.Add(dgvLoop.Rows.Count, "----", strTipo, "----");
+                                dgvLoop.Rows.Add(dgvLoop.Rows.Count, "", string.Join(" ", lstInstruccionActual.Skip(1)), "PR03");
+                            }
+                            else if (strMejorRango.Contains("TRTRUE"))
+                            {
+                                lstTempTrue.Add(lstInstruccionActual);
+                                dgvTrue.Rows.Add(dgvTrue.Rows.Count, "----", strTipo, "----");
+                                dgvTrue.Rows.Add(dgvTrue.Rows.Count, "", string.Join(" ", lstInstruccionActual.Skip(1)), "PR03");
+                            }
+                            else if (strMejorRango.Contains("TRFALSE"))
+                            {
+                                lstTempFalse.Add(lstInstruccionActual);
+                                dgvFalse.Rows.Add(dgvFalse.Rows.Count, "----", strTipo, "----");
+                                dgvFalse.Rows.Add(dgvFalse.Rows.Count, "", string.Join(" ", lstInstruccionActual.Skip(1)), "PR03");
                             }
                         }
-                        if (blnPermitido)
+                        else
                         {
                             dgvTripleta.Rows.Add(dgvTripleta.Rows.Count, "----", strTipo, "----");
                             dgvTripleta.Rows.Add(dgvTripleta.Rows.Count, "", string.Join(" ", lstInstruccionActual.Skip(1)), "PR03");
@@ -1017,32 +1036,30 @@ namespace PrinterLanguage
                     }
                     else if (strTipo.Contains("CAPTURAR"))
                     {
-                        foreach (KeyValuePair<string, string> rangos in dctRangosNoPermitidos)
+                        strMejorRango = DetectarMejorRango(strMejorRango, strTipo);
+
+                        if (!blnPermitido)
                         {
-                            if ((dctPosicionInstruccion[strTipo] >= int.Parse(rangos.Value.Split(' ')[0]) && (dctPosicionInstruccion[strTipo] <= int.Parse(rangos.Value.Split(' ')[1]))))
+                            if (strMejorRango.Contains("TRLOOP"))  //Si la bandera blnTRLOOP esta encendida, entonces se anade a la TRLOOP
                             {
-                                if (rangos.Key.Contains("TRLOOP"))  //Si la bandera blnTRLOOP esta encendida, entonces se anade a la TRLOOP
-                                {
-                                    lstTempLoop.Add(lstInstruccionActual);
-                                    dgvLoop.Rows.Add(dgvLoop.Rows.Count, "----", strTipo, "----");
-                                    dgvLoop.Rows.Add(dgvLoop.Rows.Count, string.Join(" ", lstInstruccionActual.Skip(1)), "Leer del teclado", "OPR5");
-                                }
-                                else if (rangos.Key.Contains("TRTRUE"))  //Si la bandera blnTRTRUE esta encendida, entonces se anade a la TRTRUE
-                                {
-                                    lstTempTrue.Add(lstInstruccionActual);
-                                    dgvTrue.Rows.Add(dgvTrue.Rows.Count, "----", strTipo, "----");
-                                    dgvTrue.Rows.Add(dgvTrue.Rows.Count, string.Join(" ", lstInstruccionActual.Skip(1)), "Leer del teclado", "OPR5");
-                                }
-                                else  //Si la bandera blnTRFALSE esta encendida, entonces se anade a la TRFALSE
-                                {
-                                    lstTempFalse.Add(lstInstruccionActual);
-                                    dgvFalse.Rows.Add(dgvFalse.Rows.Count, "----", strTipo, "----");
-                                    dgvFalse.Rows.Add(dgvFalse.Rows.Count, string.Join(" ", lstInstruccionActual.Skip(1)), "Leer del teclado", "OPR5");
-                                }
-                                blnPermitido = false;
+                                lstTempLoop.Add(lstInstruccionActual);
+                                dgvLoop.Rows.Add(dgvLoop.Rows.Count, "----", strTipo, "----");
+                                dgvLoop.Rows.Add(dgvLoop.Rows.Count, string.Join(" ", lstInstruccionActual.Skip(1)), "Leer del teclado", "OPR5");
+                            }
+                            else if (strMejorRango.Contains("TRTRUE"))  //Si la bandera blnTRTRUE esta encendida, entonces se anade a la TRTRUE
+                            {
+                                lstTempTrue.Add(lstInstruccionActual);
+                                dgvTrue.Rows.Add(dgvTrue.Rows.Count, "----", strTipo, "----");
+                                dgvTrue.Rows.Add(dgvTrue.Rows.Count, string.Join(" ", lstInstruccionActual.Skip(1)), "Leer del teclado", "OPR5");
+                            }
+                            else if (strMejorRango.Contains("TRFALSE"))  //Si la bandera blnTRFALSE esta encendida, entonces se anade a la TRFALSE
+                            {
+                                lstTempFalse.Add(lstInstruccionActual);
+                                dgvFalse.Rows.Add(dgvFalse.Rows.Count, "----", strTipo, "----");
+                                dgvFalse.Rows.Add(dgvFalse.Rows.Count, string.Join(" ", lstInstruccionActual.Skip(1)), "Leer del teclado", "OPR5");
                             }
                         }
-                        if (blnPermitido)
+                        else
                         {
                             dgvTripleta.Rows.Add(dgvTripleta.Rows.Count, "----", strTipo, "----");
                             dgvTripleta.Rows.Add(dgvTripleta.Rows.Count, string.Join(" ", lstInstruccionActual.Skip(1)), "Leer del teclado", "OPR5");
@@ -1052,32 +1069,30 @@ namespace PrinterLanguage
                     }
                     else if (strTipo.Contains("IMPRIMIR"))
                     {
-                        foreach (KeyValuePair<string, string> rangos in dctRangosNoPermitidos)
+                        strMejorRango = DetectarMejorRango(strMejorRango, strTipo);
+
+                        if (!blnPermitido)
                         {
-                            if ((dctPosicionInstruccion[strTipo] >= int.Parse(rangos.Value.Split(' ')[0]) && (dctPosicionInstruccion[strTipo] <= int.Parse(rangos.Value.Split(' ')[1]))))
+                            if (strMejorRango.Contains("TRLOOP"))  //Si la bandera blnTRLOOP esta encendida, entonces se anade a la TRLOOP
                             {
-                                if (rangos.Key.Contains("TRLOOP"))  //Si la bandera blnTRLOOP esta encendida, entonces se anade a la TRLOOP
-                                {
-                                    lstTempLoop.Add(lstInstruccionActual);
-                                    dgvLoop.Rows.Add(dgvLoop.Rows.Count, "----", strTipo, "----");
-                                    dgvLoop.Rows.Add(dgvLoop.Rows.Count, "", string.Join(" ", lstInstruccionActual.Skip(1)), "PR05");
-                                }
-                                else if (rangos.Key.Contains("TRTRUE"))  //Si la bandera blnTRTRUE esta encendida, entonces se anade a la TRTRUE
-                                {
-                                    lstTempTrue.Add(lstInstruccionActual);
-                                    dgvTrue.Rows.Add(dgvTrue.Rows.Count, "----", strTipo, "----");
-                                    dgvTrue.Rows.Add(dgvTrue.Rows.Count, "", string.Join(" ", lstInstruccionActual.Skip(1)), "PR05");
-                                }
-                                else  //Si la bandera blnTRFALSE esta encendida, entonces se anade a la TRFALSE
-                                {
-                                    lstTempFalse.Add(lstInstruccionActual);
-                                    dgvFalse.Rows.Add(dgvFalse.Rows.Count, "----", strTipo, "----");
-                                    dgvFalse.Rows.Add(dgvFalse.Rows.Count, "", string.Join(" ", lstInstruccionActual.Skip(1)), "PR05");
-                                }
-                                blnPermitido = false;
+                                lstTempLoop.Add(lstInstruccionActual);
+                                dgvLoop.Rows.Add(dgvLoop.Rows.Count, "----", strTipo, "----");
+                                dgvLoop.Rows.Add(dgvLoop.Rows.Count, "", string.Join(" ", lstInstruccionActual.Skip(1)), "PR05");
+                            }
+                            else if (strMejorRango.Contains("TRTRUE"))  //Si la bandera blnTRTRUE esta encendida, entonces se anade a la TRTRUE
+                            {
+                                lstTempTrue.Add(lstInstruccionActual);
+                                dgvTrue.Rows.Add(dgvTrue.Rows.Count, "----", strTipo, "----");
+                                dgvTrue.Rows.Add(dgvTrue.Rows.Count, "", string.Join(" ", lstInstruccionActual.Skip(1)), "PR05");
+                            }
+                            else if (strMejorRango.Contains("TRFALSE")) //Si la bandera blnTRFALSE esta encendida, entonces se anade a la TRFALSE
+                            {
+                                lstTempFalse.Add(lstInstruccionActual);
+                                dgvFalse.Rows.Add(dgvFalse.Rows.Count, "----", strTipo, "----");
+                                dgvFalse.Rows.Add(dgvFalse.Rows.Count, "", string.Join(" ", lstInstruccionActual.Skip(1)), "PR05");
                             }
                         }
-                        if (blnPermitido)
+                        else
                         {
                             dgvTripleta.Rows.Add(dgvTripleta.Rows.Count, "----", strTipo, "----");
                             dgvTripleta.Rows.Add(dgvTripleta.Rows.Count, "", string.Join(" ", lstInstruccionActual.Skip(1)), "PR05");
@@ -1087,53 +1102,51 @@ namespace PrinterLanguage
                     }
                     else if (strTipo.Contains("EMPIEZA"))
                     {
-                        foreach (KeyValuePair<string, string> rangos in dctRangosNoPermitidos)
+                        strMejorRango = DetectarMejorRango(strMejorRango, strTipo);
+
+                        if (!blnPermitido)
                         {
-                            if ((dctPosicionInstruccion[strTipo] > int.Parse(rangos.Value.Split(' ')[0]) && (dctPosicionInstruccion[strTipo] < int.Parse(rangos.Value.Split(' ')[1]))))
+                            if (strMejorRango.Contains("TRLOOP"))  //Si la bandera blnTRLOOP esta encendida, entonces se anade a la TRLOOP
                             {
-                                if (rangos.Key.Contains("TRLOOP"))  //Si la bandera blnTRLOOP esta encendida, entonces se anade a la TRLOOP
-                                {
-                                    lstTempLoop.Add(lstInstruccionActual);
-                                    dgvLoop.Rows.Add(dgvLoop.Rows.Count, "----", strTipo, "----");
-                                    dgvLoop.Rows.Add(dgvLoop.Rows.Count, lstInstruccionActual[1], lstInstruccionActual[2], lstInstruccionActual[3]);
-                                    dgvLoop.Rows.Add(dgvLoop.Rows.Count, lstInstruccionActual[5], lstInstruccionActual[6], lstInstruccionActual[7]);
-                                    dgvLoop.Rows.Add(dgvLoop.Rows.Count, "SALTO", "true", dgvLoop.Rows.Count + 5);
-                                    dgvLoop.Rows.Add(dgvLoop.Rows.Count, "SALTO", "false", dgvLoop.Rows.Count + 1);
-                                    dgvLoop.Rows.Add(dgvLoop.Rows.Count, "SALTO", "TRLOOP" + strTipo.Substring(7), "");
-                                    dgvLoop.Rows.Add(dgvLoop.Rows.Count, lstInstruccionActual[1], 1, "OPA1");
-                                    dgvLoop.Rows.Add(dgvLoop.Rows.Count, "SALTO", "", dgvLoop.Rows.Count - 5);
-                                    dgvLoop.Rows.Add(dgvLoop.Rows.Count, "FIN", "", "");
-                                }
-                                else if (rangos.Key.Contains("TRTRUE"))  //Si la bandera blnTRTRUE esta encendida, entonces se anade a la TRTRUE
-                                {
-                                    lstTempTrue.Add(lstInstruccionActual);
-                                    dgvTrue.Rows.Add(dgvTrue.Rows.Count, "----", strTipo, "----");
-                                    dgvTrue.Rows.Add(dgvTrue.Rows.Count, lstInstruccionActual[1], lstInstruccionActual[2], lstInstruccionActual[3]);
-                                    dgvTrue.Rows.Add(dgvTrue.Rows.Count, lstInstruccionActual[5], lstInstruccionActual[6], lstInstruccionActual[7]);
-                                    dgvTrue.Rows.Add(dgvTrue.Rows.Count, "SALTO", "true", dgvTrue.Rows.Count + 5);
-                                    dgvTrue.Rows.Add(dgvTrue.Rows.Count, "SALTO", "false", dgvTrue.Rows.Count + 1);
-                                    dgvTrue.Rows.Add(dgvTrue.Rows.Count, "SALTO", "TRLOOP" + strTipo.Substring(7), "");
-                                    dgvTrue.Rows.Add(dgvTrue.Rows.Count, lstInstruccionActual[1], 1, "OPA1");
-                                    dgvTrue.Rows.Add(dgvTrue.Rows.Count, "SALTO", "", dgvTrue.Rows.Count - 5);
-                                    dgvTrue.Rows.Add(dgvTrue.Rows.Count, "FIN", "", "");
-                                }
-                                else  //Si la bandera blnTRFALSE esta encendida, entonces se anade a la TRFALSE
-                                {
-                                    lstTempFalse.Add(lstInstruccionActual);
-                                    dgvFalse.Rows.Add(dgvFalse.Rows.Count, "----", strTipo, "----");
-                                    dgvFalse.Rows.Add(dgvFalse.Rows.Count, lstInstruccionActual[1], lstInstruccionActual[2], lstInstruccionActual[3]);
-                                    dgvFalse.Rows.Add(dgvFalse.Rows.Count, lstInstruccionActual[5], lstInstruccionActual[6], lstInstruccionActual[7]);
-                                    dgvFalse.Rows.Add(dgvFalse.Rows.Count, "SALTO", "true", dgvFalse.Rows.Count + 5);
-                                    dgvFalse.Rows.Add(dgvFalse.Rows.Count, "SALTO", "false", dgvFalse.Rows.Count + 1);
-                                    dgvFalse.Rows.Add(dgvFalse.Rows.Count, "SALTO", "TRLOOP" + strTipo.Substring(7), "");
-                                    dgvFalse.Rows.Add(dgvFalse.Rows.Count, lstInstruccionActual[1], 1, "OPA1");
-                                    dgvFalse.Rows.Add(dgvFalse.Rows.Count, "SALTO", "", dgvFalse.Rows.Count - 5);
-                                    dgvFalse.Rows.Add(dgvFalse.Rows.Count, "FIN", "", "");
-                                }
-                                blnPermitido = false;
+                                lstTempLoop.Add(lstInstruccionActual);
+                                dgvLoop.Rows.Add(dgvLoop.Rows.Count, "----", strTipo, "----");
+                                dgvLoop.Rows.Add(dgvLoop.Rows.Count, lstInstruccionActual[1], lstInstruccionActual[2], lstInstruccionActual[3]);
+                                dgvLoop.Rows.Add(dgvLoop.Rows.Count, lstInstruccionActual[5], lstInstruccionActual[6], lstInstruccionActual[7]);
+                                dgvLoop.Rows.Add(dgvLoop.Rows.Count, "SALTO", "true", dgvLoop.Rows.Count + 5);
+                                dgvLoop.Rows.Add(dgvLoop.Rows.Count, "SALTO", "false", dgvLoop.Rows.Count + 1);
+                                dgvLoop.Rows.Add(dgvLoop.Rows.Count, "SALTO", "TRLOOP" + strTipo.Substring(7), "");
+                                dgvLoop.Rows.Add(dgvLoop.Rows.Count, lstInstruccionActual[1], 1, "OPA1");
+                                dgvLoop.Rows.Add(dgvLoop.Rows.Count, "SALTO", "", dgvLoop.Rows.Count - 5);
+                                dgvLoop.Rows.Add(dgvLoop.Rows.Count, "FIN", "", "");
+                            }
+                            else if (strMejorRango.Contains("TRTRUE"))  //Si la bandera blnTRTRUE esta encendida, entonces se anade a la TRTRUE
+                            {
+                                lstTempTrue.Add(lstInstruccionActual);
+                                dgvTrue.Rows.Add(dgvTrue.Rows.Count, "----", strTipo, "----");
+                                dgvTrue.Rows.Add(dgvTrue.Rows.Count, lstInstruccionActual[1], lstInstruccionActual[2], lstInstruccionActual[3]);
+                                dgvTrue.Rows.Add(dgvTrue.Rows.Count, lstInstruccionActual[5], lstInstruccionActual[6], lstInstruccionActual[7]);
+                                dgvTrue.Rows.Add(dgvTrue.Rows.Count, "SALTO", "true", dgvTrue.Rows.Count + 5);
+                                dgvTrue.Rows.Add(dgvTrue.Rows.Count, "SALTO", "false", dgvTrue.Rows.Count + 1);
+                                dgvTrue.Rows.Add(dgvTrue.Rows.Count, "SALTO", "TRLOOP" + strTipo.Substring(7), "");
+                                dgvTrue.Rows.Add(dgvTrue.Rows.Count, lstInstruccionActual[1], 1, "OPA1");
+                                dgvTrue.Rows.Add(dgvTrue.Rows.Count, "SALTO", "", dgvTrue.Rows.Count - 5);
+                                dgvTrue.Rows.Add(dgvTrue.Rows.Count, "FIN", "", "");
+                            }
+                            else if (strMejorRango.Contains("TRFALSE")) //Si la bandera blnTRFALSE esta encendida, entonces se anade a la TRFALSE
+                            {
+                                lstTempFalse.Add(lstInstruccionActual);
+                                dgvFalse.Rows.Add(dgvFalse.Rows.Count, "----", strTipo, "----");
+                                dgvFalse.Rows.Add(dgvFalse.Rows.Count, lstInstruccionActual[1], lstInstruccionActual[2], lstInstruccionActual[3]);
+                                dgvFalse.Rows.Add(dgvFalse.Rows.Count, lstInstruccionActual[5], lstInstruccionActual[6], lstInstruccionActual[7]);
+                                dgvFalse.Rows.Add(dgvFalse.Rows.Count, "SALTO", "true", dgvFalse.Rows.Count + 5);
+                                dgvFalse.Rows.Add(dgvFalse.Rows.Count, "SALTO", "false", dgvFalse.Rows.Count + 1);
+                                dgvFalse.Rows.Add(dgvFalse.Rows.Count, "SALTO", "TRLOOP" + strTipo.Substring(7), "");
+                                dgvFalse.Rows.Add(dgvFalse.Rows.Count, lstInstruccionActual[1], 1, "OPA1");
+                                dgvFalse.Rows.Add(dgvFalse.Rows.Count, "SALTO", "", dgvFalse.Rows.Count - 5);
+                                dgvFalse.Rows.Add(dgvFalse.Rows.Count, "FIN", "", "");
                             }
                         }
-                        if (blnPermitido)
+                        else
                         {
                             dgvTripleta.Rows.Add(dgvTripleta.Rows.Count, "----", strTipo, "----");
                             dgvTripleta.Rows.Add(dgvTripleta.Rows.Count, lstInstruccionActual[1], lstInstruccionActual[2], lstInstruccionActual[3]);
@@ -1162,71 +1175,67 @@ namespace PrinterLanguage
                                 string strAnteriorAnterior = lstInstruccionActual[j - 2];                                                      //Se guarda el operando ant anterior (el que recibe los cambios)
                                 string strOperando = lstInstruccionActual[j];
 
-                                foreach (KeyValuePair<string, string> rangos in dctRangosNoPermitidos)
+                                strMejorRango = DetectarMejorRango(strMejorRango, strTipo);
+
+                                if (!blnPermitido)
                                 {
-                                    if ((dctPosicionInstruccion[strTipo] >= int.Parse(rangos.Value.Split(' ')[0]) && (dctPosicionInstruccion[strTipo] <= int.Parse(rangos.Value.Split(' ')[1]))))
+                                    if (strMejorRango.Contains("TRLOOP"))  //Si la bandera blnTRLOOP esta encendida, entonces se anade a la TRLOOP
                                     {
-                                        if (rangos.Key.Contains("TRLOOP"))  //Si la bandera blnTRLOOP esta encendida, entonces se anade a la TRLOOP
-                                        {
-                                            lstTempLoop.Add(lstInstruccionActual);
-                                            dgvLoop.Rows.Add(dgvLoop.Rows.Count, "----", strTipo, "----");
-                                            dgvLoop.Rows.Add(dgvLoop.Rows.Count, strAnteriorAnterior, strAnterior, strOperando);
-                                        }
-                                        else if (rangos.Key.Contains("TRTRUE"))  //Si la bandera blnTRTRUE esta encendida, entonces se anade a la TRTRUE
-                                        {
-                                            lstTempTrue.Add(lstInstruccionActual);
-                                            dgvTrue.Rows.Add(dgvTrue.Rows.Count, "----", strTipo, "----");
-                                            dgvTrue.Rows.Add(dgvTrue.Rows.Count, strAnteriorAnterior, strAnterior, strOperando);
-                                        }
-                                        else  //Si la bandera blnTRFALSE esta encendida, entonces se anade a la TRFALSE
-                                        {
-                                            lstTempFalse.Add(lstInstruccionActual);
-                                            dgvFalse.Rows.Add(dgvFalse.Rows.Count, "----", strTipo, "----");
-                                            dgvFalse.Rows.Add(dgvFalse.Rows.Count, strAnteriorAnterior, strAnterior, strOperando);
-                                        }
-                                        blnPermitido = false;
+                                        lstTempLoop.Add(lstInstruccionActual);
+                                        dgvLoop.Rows.Add(dgvLoop.Rows.Count, "----", strTipo, "----");
+                                        dgvLoop.Rows.Add(dgvLoop.Rows.Count, strAnteriorAnterior, strAnterior, strOperando);
+                                    }
+                                    else if (strMejorRango.Contains("TRTRUE"))  //Si la bandera blnTRTRUE esta encendida, entonces se anade a la TRTRUE
+                                    {
+                                        lstTempTrue.Add(lstInstruccionActual);
+                                        dgvTrue.Rows.Add(dgvTrue.Rows.Count, "----", strTipo, "----");
+                                        dgvTrue.Rows.Add(dgvTrue.Rows.Count, strAnteriorAnterior, strAnterior, strOperando);
+                                    }
+                                    else if (strMejorRango.Contains("TRFALSE"))  //Si la bandera blnTRFALSE esta encendida, entonces se anade a la TRFALSE
+                                    {
+                                        lstTempFalse.Add(lstInstruccionActual);
+                                        dgvFalse.Rows.Add(dgvFalse.Rows.Count, "----", strTipo, "----");
+                                        dgvFalse.Rows.Add(dgvFalse.Rows.Count, strAnteriorAnterior, strAnterior, strOperando);
                                     }
                                 }
-                                if (blnPermitido)
+                                else
                                 {
                                     dgvTripleta.Rows.Add(dgvTripleta.Rows.Count, "----", strTipo, "----");
                                     dgvTripleta.Rows.Add(dgvTripleta.Rows.Count, "", string.Join(" ", lstInstruccionActual.Skip(1)), "PR05");
                                 }
-                                blnPermitido = true;
                                 lstInstruccionActual.Remove(strAnterior);
                                 lstInstruccionActual.Remove(strOperando);
                                 j = -1;
+                                blnPermitido = true;
                                 break;
                         }
                     }
                     else if (strTipo.Contains("ASIG"))
                     {
-                        foreach (KeyValuePair<string, string> rangos in dctRangosNoPermitidos)
+                        strMejorRango = DetectarMejorRango(strMejorRango, strTipo);
+
+                        if (!blnPermitido)
                         {
-                            if ((dctPosicionInstruccion[strTipo] >= int.Parse(rangos.Value.Split(' ')[0]) && (dctPosicionInstruccion[strTipo] <= int.Parse(rangos.Value.Split(' ')[1]))))
+                            if (strMejorRango.Contains("TRLOOP"))  //Si la bandera blnTRLOOP esta encendida, entonces se anade a la TRLOOP
                             {
-                                if (rangos.Key.Contains("TRLOOP"))  //Si la bandera blnTRLOOP esta encendida, entonces se anade a la TRLOOP
-                                {
-                                    lstTempLoop.Add(lstInstruccionActual);
-                                    dgvLoop.Rows.Add(dgvLoop.Rows.Count, "----", strTipo, "----");
-                                    dgvLoop.Rows.Add(dgvLoop.Rows.Count, lstInstruccionActual[0], string.Join(" ", lstInstruccionActual.Skip(1).Take(1)), "OPR5");
-                                }
-                                else if (rangos.Key.Contains("TRTRUE"))  //Si la bandera blnTRTRUE esta encendida, entonces se anade a la TRTRUE
-                                {
-                                    lstTempTrue.Add(lstInstruccionActual);
-                                    dgvTrue.Rows.Add(dgvTrue.Rows.Count, "----", strTipo, "----");
-                                    dgvTrue.Rows.Add(dgvTrue.Rows.Count, lstInstruccionActual[0], string.Join(" ", lstInstruccionActual.Skip(1).Take(1)), "OPR5");
-                                }
-                                else  //Si la bandera blnTRFALSE esta encendida, entonces se anade a la TRFALSE
-                                {
-                                    lstTempFalse.Add(lstInstruccionActual);
-                                    dgvFalse.Rows.Add(dgvFalse.Rows.Count, "----", strTipo, "----");
-                                    dgvFalse.Rows.Add(dgvFalse.Rows.Count, lstInstruccionActual[0], string.Join(" ", lstInstruccionActual.Skip(1).Take(1)), "OPR5");
-                                }
-                                blnPermitido = false;
+                                lstTempLoop.Add(lstInstruccionActual);
+                                dgvLoop.Rows.Add(dgvLoop.Rows.Count, "----", strTipo, "----");
+                                dgvLoop.Rows.Add(dgvLoop.Rows.Count, lstInstruccionActual[0], string.Join(" ", lstInstruccionActual.Skip(1).Take(1)), "OPR5");
+                            }
+                            else if (strMejorRango.Contains("TRTRUE"))  //Si la bandera blnTRTRUE esta encendida, entonces se anade a la TRTRUE
+                            {
+                                lstTempTrue.Add(lstInstruccionActual);
+                                dgvTrue.Rows.Add(dgvTrue.Rows.Count, "----", strTipo, "----");
+                                dgvTrue.Rows.Add(dgvTrue.Rows.Count, lstInstruccionActual[0], string.Join(" ", lstInstruccionActual.Skip(1).Take(1)), "OPR5");
+                            }
+                            else if (strMejorRango.Contains("TRFALSE")) //Si la bandera blnTRFALSE esta encendida, entonces se anade a la TRFALSE
+                            {
+                                lstTempFalse.Add(lstInstruccionActual);
+                                dgvFalse.Rows.Add(dgvFalse.Rows.Count, "----", strTipo, "----");
+                                dgvFalse.Rows.Add(dgvFalse.Rows.Count, lstInstruccionActual[0], string.Join(" ", lstInstruccionActual.Skip(1).Take(1)), "OPR5");
                             }
                         }
-                        if (blnPermitido)
+                        else
                         {
                             dgvTripleta.Rows.Add(dgvTripleta.Rows.Count, "----", strTipo, "----");
                             dgvTripleta.Rows.Add(dgvTripleta.Rows.Count, lstInstruccionActual[0], string.Join(" ", lstInstruccionActual.Skip(1).Take(1)), "OPR5");
@@ -1236,80 +1245,78 @@ namespace PrinterLanguage
                     }
                     else if (strTipo.Contains("SI"))
                     {
-                        foreach (KeyValuePair<string, string> rangos in dctRangosNoPermitidos)
+                        strMejorRango = DetectarMejorRango(strMejorRango, strTipo);
+
+                        if (!blnPermitido)
                         {
-                            if ((dctPosicionInstruccion[strTipo] > int.Parse(rangos.Value.Split(' ')[0]) && (dctPosicionInstruccion[strTipo] < int.Parse(rangos.Value.Split(' ')[1]))))
+                            if (strMejorRango.Contains("TRLOOP"))  //Si la bandera blnTRLOOP esta encendida, entonces se anade a la TRLOOP
                             {
-                                if (rangos.Key.Contains("TRLOOP"))  //Si la bandera blnTRLOOP esta encendida, entonces se anade a la TRLOOP
+                                lstTempLoop.Add(lstInstruccionActual);
+                                if (!(lstInstruccionActual.Contains("OPL1") || lstInstruccionActual.Contains("OPL2") || lstInstruccionActual.Contains("OPL3")))
                                 {
-                                    lstTempLoop.Add(lstInstruccionActual);
-                                    if (!(lstInstruccionActual.Contains("OPL1") || lstInstruccionActual.Contains("OPL2") || lstInstruccionActual.Contains("OPL3")))
+                                    dgvLoop.Rows.Add(dgvLoop.Rows.Count, "----", strTipo, "----");
+                                    if (!lstInstruccionActual.Contains("CES1"))
                                     {
-                                        dgvLoop.Rows.Add(dgvLoop.Rows.Count, "----", strTipo, "----");
-                                        if (!lstInstruccionActual.Contains("CES1"))
-                                        {
-                                            dgvLoop.Rows.Add(dgvLoop.Rows.Count, lstInstruccionActual[1], lstInstruccionActual[2], lstInstruccionActual[3]);
-                                        }
-                                        else
-                                        {
-                                            dgvLoop.Rows.Add(dgvLoop.Rows.Count, lstInstruccionActual[2], lstInstruccionActual[3], lstInstruccionActual[4]);
-                                        }
-                                        dgvLoop.Rows.Add(dgvLoop.Rows.Count, "SALTO", "true", dgvLoop.Rows.Count + 2);
-                                        dgvLoop.Rows.Add(dgvLoop.Rows.Count, "SALTO", "false", dgvLoop.Rows.Count + 3);
-                                        dgvLoop.Rows.Add(dgvLoop.Rows.Count, "SALTO", "TRTRUE" + strTipo.Substring(2), "");
-                                        dgvLoop.Rows.Add(dgvLoop.Rows.Count, "SALTO", "", dgvLoop.Rows.Count + 2);
-                                        dgvLoop.Rows.Add(dgvLoop.Rows.Count, "SALTO", "TRFALSE" + strTipo.Substring(2), "");
-                                        dgvLoop.Rows.Add(dgvLoop.Rows.Count, "FIN", "", "");
+                                        dgvLoop.Rows.Add(dgvLoop.Rows.Count, lstInstruccionActual[1], lstInstruccionActual[2], lstInstruccionActual[3]);
                                     }
+                                    else
+                                    {
+                                        dgvLoop.Rows.Add(dgvLoop.Rows.Count, lstInstruccionActual[2], lstInstruccionActual[3], lstInstruccionActual[4]);
+                                    }
+                                    dgvLoop.Rows.Add(dgvLoop.Rows.Count, "SALTO", "true", dgvLoop.Rows.Count + 2);
+                                    dgvLoop.Rows.Add(dgvLoop.Rows.Count, "SALTO", "false", dgvLoop.Rows.Count + 3);
+                                    dgvLoop.Rows.Add(dgvLoop.Rows.Count, "SALTO", "TRTRUE" + strTipo.Substring(2), "");
+                                    dgvLoop.Rows.Add(dgvLoop.Rows.Count, "SALTO", "", dgvLoop.Rows.Count + 2);
+                                    dgvLoop.Rows.Add(dgvLoop.Rows.Count, "SALTO", "TRFALSE" + strTipo.Substring(2), "");
+                                    dgvLoop.Rows.Add(dgvLoop.Rows.Count, "FIN", "", "");
                                 }
-                                else if (rangos.Key.Contains("TRTRUE"))  //Si la bandera blnTRTRUE esta encendida, entonces se anade a la TRTRUE
+                            }
+                            else if (strMejorRango.Contains("TRTRUE"))  //Si la bandera blnTRTRUE esta encendida, entonces se anade a la TRTRUE
+                            {
+                                lstTempTrue.Add(lstInstruccionActual);
+                                if (!(lstInstruccionActual.Contains("OPL1") || lstInstruccionActual.Contains("OPL2") || lstInstruccionActual.Contains("OPL3")))
                                 {
-                                    lstTempTrue.Add(lstInstruccionActual);
-                                    if (!(lstInstruccionActual.Contains("OPL1") || lstInstruccionActual.Contains("OPL2") || lstInstruccionActual.Contains("OPL3")))
+                                    dgvTrue.Rows.Add(dgvTrue.Rows.Count, "----", strTipo, "----");
+                                    if (!lstInstruccionActual.Contains("CES1"))
                                     {
-                                        dgvTrue.Rows.Add(dgvTrue.Rows.Count, "----", strTipo, "----");
-                                        if (!lstInstruccionActual.Contains("CES1"))
-                                        {
-                                            dgvTrue.Rows.Add(dgvTrue.Rows.Count, lstInstruccionActual[1], lstInstruccionActual[2], lstInstruccionActual[3]);
-                                        }
-                                        else
-                                        {
-                                            dgvTrue.Rows.Add(dgvTrue.Rows.Count, lstInstruccionActual[2], lstInstruccionActual[3], lstInstruccionActual[4]);
-                                        }
-                                        dgvTrue.Rows.Add(dgvTrue.Rows.Count, "SALTO", "true", dgvTrue.Rows.Count + 2);
-                                        dgvTrue.Rows.Add(dgvTrue.Rows.Count, "SALTO", "false", dgvTrue.Rows.Count + 3);
-                                        dgvTrue.Rows.Add(dgvTrue.Rows.Count, "SALTO", "TRTRUE" + strTipo.Substring(2), "");
-                                        dgvTrue.Rows.Add(dgvTrue.Rows.Count, "SALTO", "", dgvTrue.Rows.Count + 2);
-                                        dgvTrue.Rows.Add(dgvTrue.Rows.Count, "SALTO", "TRFALSE" + strTipo.Substring(2), "");
-                                        dgvTrue.Rows.Add(dgvTrue.Rows.Count, "FIN", "", "");
+                                        dgvTrue.Rows.Add(dgvTrue.Rows.Count, lstInstruccionActual[1], lstInstruccionActual[2], lstInstruccionActual[3]);
                                     }
+                                    else
+                                    {
+                                        dgvTrue.Rows.Add(dgvTrue.Rows.Count, lstInstruccionActual[2], lstInstruccionActual[3], lstInstruccionActual[4]);
+                                    }
+                                    dgvTrue.Rows.Add(dgvTrue.Rows.Count, "SALTO", "true", dgvTrue.Rows.Count + 2);
+                                    dgvTrue.Rows.Add(dgvTrue.Rows.Count, "SALTO", "false", dgvTrue.Rows.Count + 3);
+                                    dgvTrue.Rows.Add(dgvTrue.Rows.Count, "SALTO", "TRTRUE" + strTipo.Substring(2), "");
+                                    dgvTrue.Rows.Add(dgvTrue.Rows.Count, "SALTO", "", dgvTrue.Rows.Count + 2);
+                                    dgvTrue.Rows.Add(dgvTrue.Rows.Count, "SALTO", "TRFALSE" + strTipo.Substring(2), "");
+                                    dgvTrue.Rows.Add(dgvTrue.Rows.Count, "FIN", "", "");
                                 }
-                                else  //Si la bandera blnTRFALSE esta encendida, entonces se anade a la TRFALSE
+                            }
+                            else if (strMejorRango.Contains("TRFALSE"))  //Si la bandera blnTRFALSE esta encendida, entonces se anade a la TRFALSE
+                            {
+                                lstTempFalse.Add(lstInstruccionActual);
+                                if (!(lstInstruccionActual.Contains("OPL1") || lstInstruccionActual.Contains("OPL2") || lstInstruccionActual.Contains("OPL3")))
                                 {
-                                    lstTempFalse.Add(lstInstruccionActual);
-                                    if (!(lstInstruccionActual.Contains("OPL1") || lstInstruccionActual.Contains("OPL2") || lstInstruccionActual.Contains("OPL3")))
+                                    dgvFalse.Rows.Add(dgvFalse.Rows.Count, "----", strTipo, "----");
+                                    if (!lstInstruccionActual.Contains("CES1"))
                                     {
-                                        dgvFalse.Rows.Add(dgvFalse.Rows.Count, "----", strTipo, "----");
-                                        if (!lstInstruccionActual.Contains("CES1"))
-                                        {
-                                            dgvFalse.Rows.Add(dgvFalse.Rows.Count, lstInstruccionActual[1], lstInstruccionActual[2], lstInstruccionActual[3]);
-                                        }
-                                        else
-                                        {
-                                            dgvFalse.Rows.Add(dgvFalse.Rows.Count, lstInstruccionActual[2], lstInstruccionActual[3], lstInstruccionActual[4]);
-                                        }
-                                        dgvFalse.Rows.Add(dgvFalse.Rows.Count, "SALTO", "true", dgvFalse.Rows.Count + 2);
-                                        dgvFalse.Rows.Add(dgvFalse.Rows.Count, "SALTO", "false", dgvFalse.Rows.Count + 3);
-                                        dgvFalse.Rows.Add(dgvFalse.Rows.Count, "SALTO", "TRTRUE" + strTipo.Substring(2), "");
-                                        dgvFalse.Rows.Add(dgvFalse.Rows.Count, "SALTO", "", dgvFalse.Rows.Count + 2);
-                                        dgvFalse.Rows.Add(dgvFalse.Rows.Count, "SALTO", "TRFALSE" + strTipo.Substring(2), "");
-                                        dgvFalse.Rows.Add(dgvFalse.Rows.Count, "FIN", "", "");
+                                        dgvFalse.Rows.Add(dgvFalse.Rows.Count, lstInstruccionActual[1], lstInstruccionActual[2], lstInstruccionActual[3]);
                                     }
+                                    else
+                                    {
+                                        dgvFalse.Rows.Add(dgvFalse.Rows.Count, lstInstruccionActual[2], lstInstruccionActual[3], lstInstruccionActual[4]);
+                                    }
+                                    dgvFalse.Rows.Add(dgvFalse.Rows.Count, "SALTO", "true", dgvFalse.Rows.Count + 2);
+                                    dgvFalse.Rows.Add(dgvFalse.Rows.Count, "SALTO", "false", dgvFalse.Rows.Count + 3);
+                                    dgvFalse.Rows.Add(dgvFalse.Rows.Count, "SALTO", "TRTRUE" + strTipo.Substring(2), "");
+                                    dgvFalse.Rows.Add(dgvFalse.Rows.Count, "SALTO", "", dgvFalse.Rows.Count + 2);
+                                    dgvFalse.Rows.Add(dgvFalse.Rows.Count, "SALTO", "TRFALSE" + strTipo.Substring(2), "");
+                                    dgvFalse.Rows.Add(dgvFalse.Rows.Count, "FIN", "", "");
                                 }
-                                blnPermitido = false;
                             }
                         }
-                        if (blnPermitido)
+                        else
                         {
                             if (!(lstInstruccionActual.Contains("OPL1") || lstInstruccionActual.Contains("OPL2") || lstInstruccionActual.Contains("OPL3")))
                             {
@@ -1718,23 +1725,9 @@ namespace PrinterLanguage
             Transition.run(label13, "BackColor", Color.Yellow, new TransitionType_Linear(2000));
         }
 
-        //public void Animar()
-        //{
-        //    foreach (string linea in rtxtCodigo.Lines)
-        //    {
-        //        if (linea.Contains("INICIO"))
-        //        {
-        //            EncenderImpresora();
-        //        }
-        //        else if (linea.Contains("FIN"))
-        //        {
-        //            ApagarImpresora();
-        //        }
-        //        else if (linea.Contains("MOSTRAR"))
-        //        {
-        //            MensajeImpresora(linea.Substring(7));
-        //        }
-        //    }
-        //}
+        private void btnAnimar_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }
