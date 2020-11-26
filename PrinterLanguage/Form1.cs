@@ -1652,6 +1652,8 @@ namespace PrinterLanguage
             label13.ForeColor = Color.Black;
             Transition.run(label13, "ForeColor", Color.White, new TransitionType_Linear(2000));
             label13.BackColor = Color.Black;
+            WaitSeconds(2.5);
+            hoja.Location = new Point(1637, 84);
         }
 
         public void InterrumpirImpresora()
@@ -1670,6 +1672,7 @@ namespace PrinterLanguage
             Transition t2 = new Transition(new TransitionType_EaseInEaseOut(3000));
             t2.add(hojaEscaner, "Left", 1600);
             t2.run();
+            hoja.Location = new Point(1637, 84);
         }
 
         public void ApagarImpresora()
@@ -1686,6 +1689,7 @@ namespace PrinterLanguage
             Transition.run(label13, "ForeColor", Color.Black, new TransitionType_Linear(2000));
             label13.ForeColor = Color.White;
             label13.BackColor = Color.Black;
+            WaitSeconds(2.0);
         }
 
         public void EncenderImpresora()
@@ -1707,6 +1711,7 @@ namespace PrinterLanguage
             Transition.run(btnRojo, "BackColor", Color.Red, new TransitionType_Linear(2000));
             Transition.run(label13, "ForeColor", Color.White, new TransitionType_Linear(2000));
             label13.ForeColor = Color.White;
+            WaitSeconds(2.0);
         }
 
         public void EscanearImpresora()
@@ -1721,6 +1726,9 @@ namespace PrinterLanguage
             t.add(hojaEscaner, "Left", 1300);
             t.run();
             label13.ForeColor = Color.Black;
+            WaitSeconds(3.5);
+            hojaEscaner.Visible = false;
+            hojaEscaner.Location = new Point(1859, 212);
         }
 
         public void MensajeImpresora(string mensaje)
@@ -1732,6 +1740,7 @@ namespace PrinterLanguage
             label13.Text = mensaje;
             label13.Location = new Point(1686, 256);
             Transition.run(label13, "BackColor", Color.Yellow, new TransitionType_Linear(2000));
+            WaitSeconds(2.0);
         }
 
         public void RecorrerTripletas(DataGridView dgvTabla, int intPosicionInicial)
@@ -1757,6 +1766,7 @@ namespace PrinterLanguage
                     {
                         //Despues se realiza la animacion
                         MensajeImpresora(DetectarMensaje(i, dgvTabla));
+
                         i++;
                     }
                     else if (strTipoInstruccionActual.Contains("CAPTURAR"))
@@ -2220,6 +2230,19 @@ namespace PrinterLanguage
                 }
             }
             return "";
+        }
+
+        public static void WaitSeconds(double nSecs)
+        {
+            string s = "0:00:00:" + nSecs.ToString().Replace(",", ",");
+            TimeSpan ts = TimeSpan.Parse(s);
+            DateTime t1 = DateTime.Now.Add(ts);
+            DateTime t2 = DateTime.Now;
+            while (t2 < t1)
+            {
+                System.Windows.Forms.Application.DoEvents();
+                t2 = DateTime.Now;
+            }
         }
     }
 }
