@@ -12,6 +12,7 @@ using System.IO;
 using System.Text.RegularExpressions;
 using Transitions;
 using System.Threading;
+using Microsoft.VisualBasic;
 
 namespace PrinterLanguage
 {
@@ -912,6 +913,7 @@ namespace PrinterLanguage
             dctContadorTripleta.Add("ASIGOPAR", 0);
             dctContadorTripleta.Add("ASIG", 0);
 
+            bool blnOparTitulo = false;
             string strLinea = "";
             string strToken = "";
 
@@ -998,6 +1000,8 @@ namespace PrinterLanguage
             {
                 lstInstruccionActual = dctTripleta.ElementAt(i).Value;
                 strTipo = dctTripleta.ElementAt(i).Key;
+                blnOparTitulo = false;
+
 
                 for (int j = 0; j < lstInstruccionActual.Count(); j++)
                 {
@@ -1200,8 +1204,12 @@ namespace PrinterLanguage
                                 }
                                 else
                                 {
-                                    dgvTripleta.Rows.Add(dgvTripleta.Rows.Count, "----", strTipo, "----");
-                                    dgvTripleta.Rows.Add(dgvTripleta.Rows.Count, "", string.Join(" ", lstInstruccionActual.Skip(1)), "PR05");
+                                    if (!blnOparTitulo)
+                                    {
+                                        dgvTripleta.Rows.Add(dgvTripleta.Rows.Count, "----", strTipo, "----");
+                                        blnOparTitulo = true;
+                                    }
+                                    dgvTripleta.Rows.Add(dgvTripleta.Rows.Count, strAnteriorAnterior, strAnterior, strOperando);
                                 }
                                 lstInstruccionActual.Remove(strAnterior);
                                 lstInstruccionActual.Remove(strOperando);
@@ -1643,6 +1651,7 @@ namespace PrinterLanguage
             t.run();
             label13.ForeColor = Color.Black;
             Transition.run(label13, "ForeColor", Color.White, new TransitionType_Linear(2000));
+            label13.BackColor = Color.Black;
         }
 
         public void InterrumpirImpresora()
@@ -1725,7 +1734,425 @@ namespace PrinterLanguage
             Transition.run(label13, "BackColor", Color.Yellow, new TransitionType_Linear(2000));
         }
 
+        public void RecorrerTripletas(DataGridView dgvTabla, int intPosicionInicial)
+        {
+            /*  
+             *  0 = #
+             *  1 = DatoObjeto
+             *  2 = DatoFuente
+             *  3 = Operador
+             */
+
+            string strTipoInstruccionActual = "";
+            for (int i = intPosicionInicial; i < dgvTabla.Rows.Count; i++)    //Despues se recorre cada renglon individual
+            {
+                if (dgvTabla.Rows[i].Cells[1].Value.ToString().Contains("***")
+                 || dgvTabla.Rows[i].Cells[1].Value.ToString().Contains("---")) //Ahora se busca si la columna DatoObjeto contiene *** o ---
+                {
+                    //Si si, significa que se trata del inicio de una nueva instruccion
+                    //Entonces se guarda la instruccion como la actual
+                    strTipoInstruccionActual = dgvTabla.Rows[i].Cells[2].Value.ToString();
+                    //Ahora se debe detectar el tipo de instruccion para hacer determinadas acciones
+                    if (strTipoInstruccionActual.Contains("MOSTRAR"))
+                    {
+                        //Despues se realiza la animacion
+                        MensajeImpresora(DetectarMensaje(i, dgvTabla));
+                        i++;
+                    }
+                    else if (strTipoInstruccionActual.Contains("CAPTURAR"))
+                    {
+                        //Se captura el valor dentro de un iden
+                        Capturar(i, dgvTabla, strTipoInstruccionActual);
+                        //Despues se realiza la animacion
+                        EscanearImpresora();
+                        i++;
+                    }
+                    else if (strTipoInstruccionActual.Contains("IMPRIMIR"))
+                    {
+                        MessageBox.Show(DetectarMensaje(i, dgvTabla), strTipoInstruccionActual, MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        ImprimirImpresora();
+                        i++;
+                    }
+                    else if (strTipoInstruccionActual.Contains("EMPIEZA"))
+                    {
+                        Empieza(i, dgvTabla, ("TRLOOP" + int.Parse(strTipoInstruccionActual.Substring(7))));
+                        i += 8;
+                    }
+                    else if (strTipoInstruccionActual.Contains("ASIGOPAR"))
+                    {
+                        Calcular(i, dgvTabla);
+                    }
+                    else if (strTipoInstruccionActual.Contains("ASIG"))
+                    {
+                        Asignar(i, dgvTabla);
+                        i++;
+                    }
+                    else if (strTipoInstruccionActual.Contains("SI"))
+                    {
+                        Si(i, dgvTabla, ("TRTRUE" + int.Parse(strTipoInstruccionActual.Substring(2))),
+                                        ("TRFALSE" + int.Parse(strTipoInstruccionActual.Substring(2))));
+                    }
+                }
+            }
+        }
+
         private void btnAnimar_Click(object sender, EventArgs e)
+        {
+            if (rtxtCodigo.Lines[0].Contains("INICIO"))
+            {
+                EncenderImpresora();
+            }
+
+            if (dgvTripleta.Rows.Count > 0) //Primero se pregunta si existen renglones en la tripleta principal
+            {
+                RecorrerTripletas(dgvTripleta, 0);
+            }
+
+            if (rtxtCodigo.Text.Contains("FIN "))
+            {
+                ApagarImpresora();
+            }
+        }
+
+        public string DetectarMensaje(int i, DataGridView dgvTabla)
+        {
+            //Se guarda la fuente de donde se obtendra el dato
+            string strFuente = dgvTabla.Rows[i + 1].Cells[2].Value.ToString();
+            string strMensaje = "";
+            //Se detecta lo que se quiere mostrar
+            if (strFuente.Contains("IDE")) //Si es un IDEN, entonces...
+            {
+                foreach (Identificador iden in misIden) //Obten su valor de la lista de iden
+                {
+                    if (iden.Token.Contains(strFuente))
+                    {
+                        strMensaje = iden.Contenido; //El mensaje a mostrar es el contenido del iden
+                    }
+                }
+            }
+            else if (strFuente.Contains("CNU")) //Si es una CNUE, entonces...
+            {
+                foreach (KeyValuePair<string, int> constNumerica in listaConstantesNumerica) //Obten su valor de la lista de cnue
+                {
+                    if (constNumerica.Key.Equals(strFuente))
+                    {
+                        strMensaje = constNumerica.Value.ToString(); //El mensaje a mostrar es el valor del cnue
+                    }
+                }
+            }
+            else
+            {
+                foreach (KeyValuePair<string, string> cadena in listaCadenas) //Obten su valor de la lista de cadenas
+                {
+                    if (cadena.Key.Contains(strFuente))
+                    {
+                        strMensaje = cadena.Value; //El mensaje a mostrar es el valor de la cadena
+                    }
+                }
+            }
+            return strMensaje;
+        }
+
+        public void Capturar(int i, DataGridView dgvTabla, string strTipoInstruccionActual)
+        {
+            //Se guarda el identificador al cual se le guardara el valor
+            string strObjeto = dgvTabla.Rows[i + 1].Cells[1].Value.ToString();
+
+            //Se recorren los identificadores para ver cual guardara el nuevo valor
+            for (int j = 0; j < misIden.Count; j++)
+            {
+                //Se pregunta si el iden actual es igual a la variable objeto
+                if (misIden[j].Token.Contains(strObjeto))
+                {
+                    //Si si, entonces se pide el valor por medio de un input box y se guarda en el contenido del iden
+                    misIden[j].Contenido = Interaction.InputBox("Inserte el valor de la variable " + misIden[j].Token, strTipoInstruccionActual, "null");
+                    Regex rgxNumeros = new Regex(@"^\d+$");
+                    //Despues se detecta si es un numero, si si, entonces se guarda como entero
+                    if (rgxNumeros.IsMatch(misIden[j].Contenido))
+                    {
+                        misIden[j].Tipo = "Entero";
+                    }
+                    else
+                    {
+                        //Si no, entonces se guarda como cadena y se verifica si es cadena vacia <<null>> o tiene contenido
+                        misIden[j].Tipo = "Cadena";
+                        if (misIden[j].Contenido == "")
+                        {
+                            misIden[j].Contenido = "null";
+                        }
+                        else
+                        {
+                            misIden[j].Contenido = "[ " + misIden[j].Contenido + " ]";
+                        }
+                    }
+                }
+            }
+        }
+
+        public void Empieza(int i, DataGridView dgvTabla, string strTRLOOP)
+        {
+            //Primero se guarda el inicializador
+            int intValorInicio = 0, intValorActual = 0;
+            string strIdenInicio = dgvTabla.Rows[i + 1].Cells[1].Value.ToString();
+
+            foreach (Identificador identificador in misIden)
+            {
+                if (identificador.Token.Contains(strIdenInicio))
+                {
+                    intValorInicio = int.Parse(identificador.Contenido);
+                    intValorActual = intValorInicio;
+                }
+            }
+
+            //Despues se guarda el finalizador
+            int intValorFinal = 0;
+            string strCnueFinal = dgvTabla.Rows[i + 2].Cells[2].Value.ToString();
+
+            foreach (KeyValuePair<string, int> constNumerica in listaConstantesNumerica)
+            {
+                if (constNumerica.Key.Contains(strCnueFinal))
+                {
+                    intValorFinal = constNumerica.Value;
+                }
+            }
+
+            //Entonces se detecta el operador
+            string strOperador = dgvTabla.Rows[i + 2].Cells[3].Value.ToString();
+
+            //Se detecta en que posicion se halla el renglon TRLOOPn
+            int intPosicionTRLOOP = 0;
+
+            for (int j = 0; j < dgvLoop.Rows.Count; j++)
+            {
+                if (dgvLoop.Rows[j].Cells[2].Value.ToString().Contains(strTRLOOP))
+                {
+                    intPosicionTRLOOP = j;
+                    break;
+                }
+            }
+
+            while (!Condicionar(strOperador, intValorActual, intValorFinal))
+            {
+                RecorrerTripletas(dgvLoop, intPosicionTRLOOP + 1);
+                for (int k = 0; k < misIden.Count; k++)
+                {
+                    if (misIden[k].Token.Contains(strIdenInicio))
+                    {
+                        intValorActual++;
+                        misIden[k].Contenido = intValorActual.ToString();
+                        break;
+                    }
+                }
+            }
+        }
+
+        public bool Condicionar(string strOperador, int intValorActual, int intValorFinal)
+        {
+            //Entonces se detecta el operador
+            switch (strOperador)
+            {
+                case "OPR1":
+                    return intValorActual > intValorFinal;
+                case "OPR2":
+                    return intValorActual < intValorFinal;
+                case "OPR3":
+                    return intValorActual >= intValorFinal;
+                case "OPR4":
+                    return intValorActual <= intValorFinal;
+                case "OPR5":
+                    return intValorActual == intValorFinal;
+            }
+            return true;
+        }
+
+        string strTempIden = "";
+        string strTempCnue = "";
+        public void Calcular(int i, DataGridView dgvTabla)
+        {
+            int intDatoFuente = 0;
+            string strIden = dgvTabla.Rows[i + 1].Cells[1].Value.ToString();
+            string strOperador = "";
+
+            //Temporales para datos objetos
+            strTempIden = "";
+            strTempCnue = "";
+
+            for (int j = 0; j < misIden.Count; j++) //Recorremos todos los iden
+            {
+                if (misIden[j].Token.Contains(strIden)) //Si el iden actual es igual al de la operacion, entonces...
+                {
+                    for (int k = i + 1; k < dgvTabla.Rows.Count; k++) //Ahora recorremos la tripleta a partir del sig renglon
+                    {
+                        strOperador = dgvTabla.Rows[k].Cells[3].Value.ToString(); //Guardamos el operador primeramente
+
+                        if (dgvTabla.Rows[k].Cells[1].Value.ToString().Contains(strIden)) //Despues preguntamos si vamos a afectar al iden principal
+                        {
+                            intDatoFuente = ObtenerDatoFuente(dgvTabla, k);
+
+                            //Le asignamos a nuestro iden el nuevo valor, el cual se calcula con la subrutina CalcularPorPartes
+                            misIden[j].Contenido = CalcularPorPartes(int.Parse(misIden[j].Contenido.Split(' ')[0]), intDatoFuente, strOperador).ToString();
+                        }
+                        else if (dgvTabla.Rows[k].Cells[1].Value.ToString().Contains("IDE"))
+                        {
+                            intDatoFuente = ObtenerDatoFuente(dgvTabla, k);
+
+                            //Ahora establecemos el iden temporal
+                            foreach (Identificador identificador in misIden) //Lo buscamos en un foreach
+                            {
+                                if (dgvTabla.Rows[k].Cells[1].Value.ToString().Contains(identificador.Token)) //Al hallarlo...
+                                {
+                                    //Le asignamos el TOKEN + " " + CONTENIDO CALCULADO
+                                    strTempIden = identificador.Token + " " + CalcularPorPartes(int.Parse(identificador.Contenido), intDatoFuente, strOperador);
+                                    break;
+                                }
+                            }
+                        }
+                        else if (dgvTabla.Rows[k].Cells[1].Value.ToString().Contains("CNU"))
+                        {
+                            intDatoFuente = ObtenerDatoFuente(dgvTabla, k);
+
+                            //Ahora establecemos la cnue temporal
+                            foreach (KeyValuePair<string, int> constNum in listaConstantesNumerica)
+                            {
+                                if (dgvTabla.Rows[k].Cells[1].Value.ToString().Contains(constNum.Key))
+                                {
+                                    //Le asignamos el TOKEN + " " + CONTENIDO CALCULADO
+                                    strTempCnue = constNum.Key + " " + CalcularPorPartes(constNum.Value, intDatoFuente, strOperador);
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            foreach (Identificador identificador1 in misIden)
+            {
+                if (identificador1.Token.Contains(strIden))
+                {
+                    MessageBox.Show(identificador1.Token + ", " + identificador1.Contenido);
+                    break;
+                }
+            }
+        }
+
+        public int CalcularPorPartes(int intObjeto, int intFuente, string strOperador)
+        {
+            switch (strOperador)
+            {
+                case "OPA1":
+                    return intObjeto + intFuente;
+                case "OPA2":
+                    return intObjeto - intFuente;
+                case "OPA3":
+                    return intObjeto * intFuente;
+                case "OPA4":
+                    return intObjeto / intFuente;
+                case "OPA5":
+                    return intObjeto ^ intFuente;
+                case "OPR5":
+                    return intFuente;
+            }
+            return 0;
+        }
+
+        public int ObtenerDatoFuente(DataGridView dgvTabla, int k)
+        {
+            if (dgvTabla.Rows[k].Cells[2].Value.ToString().Contains("IDE")) //Si si, entonces vemos de donde viene el valor fuente
+            {
+                if (strTempIden.Contains(dgvTabla.Rows[k].Cells[2].Value.ToString()))
+                {
+                    return int.Parse(strTempIden.Split(' ')[1]);
+                }
+                else
+                {
+                    foreach (Identificador identificador in misIden) //Si es de un IDE, entonces lo obtenemos de la lista de idens
+                    {
+                        if (dgvTabla.Rows[k].Cells[2].Value.ToString().Contains(identificador.Token))
+                        {
+                            return int.Parse(identificador.Contenido);
+                        }
+                    }
+                }
+
+            }
+            else if (dgvTabla.Rows[k].Cells[2].Value.ToString().Contains("CNU"))
+            {
+                if (strTempCnue.Contains(dgvTabla.Rows[k].Cells[2].Value.ToString()))
+                {
+                    return int.Parse(strTempCnue.Split(' ')[1]);
+                }
+                else
+                {
+                    //Si es una CNU, entonces lo obtenemos del diccionario de constNumericas
+                    foreach (KeyValuePair<string, int> constNumerica in listaConstantesNumerica)
+                    {
+                        if (dgvTabla.Rows[k].Cells[2].Value.ToString().Contains(constNumerica.Key))
+                        {
+                            return constNumerica.Value;
+                        }
+                    }
+                }
+            }
+            return 0;
+        }
+
+        public void Asignar(int i, DataGridView dgvTabla)
+        {
+            string strIden = dgvTabla.Rows[i + 1].Cells[1].Value.ToString();
+            string strFuente = dgvTabla.Rows[i + 1].Cells[2].Value.ToString();
+
+            for (int j = 0; j < misIden.Count; j++)
+            {
+                if (misIden[j].Token.Contains(strIden))
+                {
+                    if (strFuente.Contains("IDE"))
+                    {
+                        foreach (Identificador identificador in misIden)
+                        {
+                            if (strFuente.Contains(identificador.Token))
+                            {
+                                misIden[j].Contenido = identificador.Contenido;
+                                break;
+                            }
+                        }
+                        break;
+                    }
+                    else if (strFuente.Contains("CNU"))
+                    {
+                        foreach (KeyValuePair<string, int> constNumerica in listaConstantesNumerica)
+                        {
+                            if (constNumerica.Key.Contains(strFuente))
+                            {
+                                misIden[j].Contenido = constNumerica.Value.ToString();
+                                break;
+                            }
+                        }
+                        break;
+                    }
+                    else if (strFuente.Contains("CADE"))
+                    {
+                        foreach (KeyValuePair<string, string> cadena in listaCadenas)
+                        {
+                            if (cadena.Key.Contains(strFuente))
+                            {
+                                misIden[j].Contenido = cadena.Value;
+                                break;
+                            }
+                        }
+                        break;
+                    }
+                }
+            }
+            foreach (Identificador item in misIden)
+            {
+                if (item.Token.Contains(strIden))
+                {
+                    MessageBox.Show(item.Token + ", " + item.Contenido);
+                }
+            }
+        }
+
+        public void Si(int i, DataGridView dgvTabla, string strTRUE, string strFALSE)
         {
 
         }
