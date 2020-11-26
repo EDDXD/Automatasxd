@@ -1791,6 +1791,7 @@ namespace PrinterLanguage
                     {
                         Si(i, dgvTabla, ("TRTRUE" + int.Parse(strTipoInstruccionActual.Substring(2))),
                                         ("TRFALSE" + int.Parse(strTipoInstruccionActual.Substring(2))));
+                        i += 10;
                     }
                 }
             }
@@ -2143,18 +2144,82 @@ namespace PrinterLanguage
                     }
                 }
             }
-            foreach (Identificador item in misIden)
-            {
-                if (item.Token.Contains(strIden))
-                {
-                    MessageBox.Show(item.Token + ", " + item.Contenido);
-                }
-            }
         }
 
         public void Si(int i, DataGridView dgvTabla, string strTRUE, string strFALSE)
         {
+            string strObjeto = dgvTabla.Rows[i + 1].Cells[1].Value.ToString();
+            string strFuente = dgvTabla.Rows[i + 1].Cells[2].Value.ToString();
+            string strOperador = dgvTabla.Rows[i + 1].Cells[3].Value.ToString();
 
+            strObjeto = ObtenerOperando(strObjeto);
+            strFuente = ObtenerOperando(strFuente);
+
+            //Se detecta en que posicion se halla el renglon TRLOOPn
+            int intPosTRTRUE = 0;
+            int intPosTRFALSE = 0;
+
+            for (int j = 0; j < dgvTrue.Rows.Count; j++)
+            {
+                if (dgvTrue.Rows[j].Cells[2].Value.ToString().Contains(strTRUE))
+                {
+                    intPosTRTRUE = j;
+                    break;
+                }
+            }
+
+            for (int j = 0; j < dgvFalse.Rows.Count; j++)
+            {
+                if (dgvFalse.Rows[j].Cells[2].Value.ToString().Contains(strFALSE))
+                {
+                    intPosTRFALSE = j;
+                    break;
+                }
+            }
+
+            if (Condicionar(strOperador, int.Parse(strObjeto), int.Parse(strFuente)))
+            {
+                RecorrerTripletas(dgvTrue, intPosTRTRUE + 1);
+            }
+            else
+            {
+                RecorrerTripletas(dgvFalse, intPosTRFALSE + 1);
+            }
+        }
+
+        public string ObtenerOperando(string strOperando)
+        {
+            if (strOperando.Contains("IDE"))
+            {
+                foreach (Identificador identificador in misIden)
+                {
+                    if (strOperando.Contains(identificador.Token))
+                    {
+                        return identificador.Contenido;
+                    }
+                }
+            }
+            else if (strOperando.Contains("CNU"))
+            {
+                foreach (KeyValuePair<string, int> constNum in listaConstantesNumerica)
+                {
+                    if (strOperando.Contains(constNum.Key))
+                    {
+                        return constNum.Value.ToString();
+                    }
+                }
+            }
+            else if (strOperando.Contains("CADE"))
+            {
+                foreach (KeyValuePair<string, string> strCadena in listaCadenas)
+                {
+                    if (strOperando.Contains(strCadena.Key))
+                    {
+                        return strCadena.Value;
+                    }
+                }
+            }
+            return "";
         }
     }
 }
